@@ -1,0 +1,5 @@
+# gitignore
+
+# IDE config files
+.vscode
+.spyproject
