@@ -45,10 +45,20 @@ def train():
         label_vectors[label] = label_list
     
     # averaging into one vector prototype
+    for label in label_vectors:
+        prototype_vector = [0] * len(vocabulary)
+        for vector in label_vectors[label]:
+            for i in range(len(vector)):
+                prototype_vector[i] += vector[i]
+        prototype_vector = [x / len(label_vectors[label]) for x in prototype_vector]
+        prototype.append(prototype_vector)
     
+    #do dictionary to store the prototype vector for each label
+    prototype_dict = {}
+    for i, label in enumerate(label_vectors):
+        prototype_dict[label] = prototype[i]
+    return prototype_dict
 
-        
-train()
 
 
 
