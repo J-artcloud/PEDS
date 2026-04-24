@@ -1,0 +1,980 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Python Fundamentals — Part 1</title>
+<link href="https://fonts.googleapis.com/css2?family=Space+Mono:wght@400;700&family=Syne:wght@400;700;800&display=swap" rel="stylesheet">
+<style>
+:root {
+  --bg:      #0d0d12;
+  --surf:    #16161f;
+  --surf2:   #1f1f2e;
+  --border:  #2a2a3d;
+  --accent:  #7fff6e;
+  --text:    #f0f0f5;
+  --muted:   #8888aa;
+  --dim:     #3e3e5a;
+  --red:    #ff5f57;
+  --yellow: #ffbd2e;
+  --green:  #28c840;
+  --blue:   #89b4fa;
+  --purple: #cba6f7;
+  --orange: #fab387;
+  --teal:   #89dceb;
+  --str-c:  #a6e3a1;
+  --ease: cubic-bezier(0.23, 1, 0.32, 1);
+}
+*,*::before,*::after{margin:0;padding:0;box-sizing:border-box;}
+html,body{height:100%;overflow:hidden;background:var(--bg);color:var(--text);font-family:'Syne',sans-serif;-webkit-font-smoothing:antialiased;}
+
+/* ── TRACK ── */
+.track{display:flex;height:100vh;width:100vw;transition:transform .55s var(--ease);will-change:transform;}
+
+/* ── SLIDE ── */
+.slide{
+  min-width:100vw;height:100vh;
+  display:grid;place-items:center;
+  padding:0 12%;position:relative;overflow:hidden;
+}
+.slide::before{
+  content:'';position:absolute;inset:0;
+  background-image:linear-gradient(var(--border) 1px,transparent 1px),linear-gradient(90deg,var(--border) 1px,transparent 1px);
+  background-size:64px 64px;opacity:.09;pointer-events:none;
+}
+.slide::after{
+  content:'';position:absolute;
+  width:600px;height:600px;border-radius:50%;
+  background:radial-gradient(circle,rgba(127,255,110,.05) 0%,transparent 70%);
+  top:-140px;right:-160px;pointer-events:none;
+}
+.slide-inner{position:relative;z-index:1;width:100%;max-width:1060px;display:flex;flex-direction:column;}
+
+/* ── TYPE SCALE ── */
+.eyebrow{
+  font-family:'Space Mono',monospace;font-size:.68rem;font-weight:700;
+  color:var(--accent);text-transform:uppercase;letter-spacing:.22em;
+  margin-bottom:16px;display:flex;align-items:center;gap:10px;
+}
+.eyebrow::after{content:'';display:block;width:28px;height:1px;background:var(--accent);opacity:.45;}
+h1{font-size:clamp(3rem,5.5vw,4.8rem);font-weight:800;line-height:1.05;letter-spacing:-.025em;margin-bottom:18px;}
+h2{font-size:clamp(1.9rem,3.6vw,3rem);font-weight:800;line-height:1.1;letter-spacing:-.02em;margin-bottom:24px;}
+h1 em,h2 em{color:var(--accent);font-style:normal;}
+.body{font-size:clamp(.95rem,1.5vw,1.12rem);color:var(--muted);line-height:1.75;}
+.body strong{color:var(--text);}
+.body+.body{margin-top:10px;}
+
+/* ── CALLOUTS ── */
+.call{border-radius:10px;padding:18px 22px;margin-top:18px;font-size:clamp(.9rem,1.4vw,1.05rem);line-height:1.7;color:var(--text);}
+.call-g{background:rgba(127,255,110,.06);border:1px solid rgba(127,255,110,.18);border-left:3px solid var(--accent);}
+.call-y{background:rgba(255,189,46,.05);border:1px solid rgba(255,189,46,.16);border-left:3px solid var(--yellow);}
+.call-r{background:rgba(255,95,87,.05);border:1px solid rgba(255,95,87,.16);border-left:3px solid var(--red);}
+.call-b{background:rgba(137,180,250,.05);border:1px solid rgba(137,180,250,.16);border-left:3px solid var(--blue);}
+.call-label{font-family:'Space Mono',monospace;font-size:.6rem;letter-spacing:.18em;text-transform:uppercase;margin-bottom:7px;display:block;opacity:.65;}
+
+/* ── LIST ── */
+.lst{list-style:none;margin-top:18px;display:flex;flex-direction:column;gap:11px;}
+.lst li{display:flex;gap:13px;align-items:baseline;font-size:clamp(.93rem,1.45vw,1.08rem);color:var(--muted);line-height:1.6;}
+.lst li::before{content:'›';color:var(--accent);font-size:1.1em;font-weight:700;flex-shrink:0;}
+.lst li strong{color:var(--text);}
+
+/* ── GRID ── */
+.cols{display:grid;grid-template-columns:1fr 1fr;gap:14px;margin-top:18px;}
+
+/* ── TABLE ── */
+.tbl{width:100%;border-collapse:collapse;margin-top:18px;border-radius:10px;overflow:hidden;border:1px solid var(--border);}
+.tbl thead tr{background:var(--surf2);}
+.tbl th{font-family:'Space Mono',monospace;font-size:.6rem;letter-spacing:.16em;text-transform:uppercase;color:var(--accent);padding:13px 17px;text-align:left;border-bottom:1px solid var(--border);}
+.tbl td{padding:11px 17px;font-size:clamp(.82rem,1.25vw,.97rem);color:var(--muted);border-bottom:1px solid rgba(255,255,255,.04);}
+.tbl tr:last-child td{border-bottom:none;}
+.tbl td:first-child{font-family:'Space Mono',monospace;color:var(--accent);font-size:.87rem;}
+
+/* ── macOS CODE WINDOW ── */
+.win{margin-top:18px;border-radius:14px;overflow:hidden;border:1px solid rgba(255,255,255,.07);box-shadow:0 0 0 1px rgba(0,0,0,.45),0 20px 56px rgba(0,0,0,.55),inset 0 1px 0 rgba(255,255,255,.04);}
+.tbar{background:#222230;padding:10px 15px;display:flex;align-items:center;gap:7px;border-bottom:1px solid rgba(255,255,255,.06);}
+.d{width:11px;height:11px;border-radius:50%;flex-shrink:0;}
+.d.r{background:var(--red);} .d.y{background:var(--yellow);} .d.g{background:var(--green);}
+.fn{color:#888;font-family:'Space Mono',monospace;font-size:.7rem;margin:0 auto;padding-right:33px;}
+pre{background:#13131e;padding:18px 22px;font-family:'Space Mono',monospace;font-size:clamp(.72rem,1.1vw,.88rem);line-height:1.8;color:#cdd6f4;overflow-x:auto;white-space:pre;tab-size:2;}
+.kw{color:var(--purple);} .fc{color:var(--blue);} .st{color:var(--str-c);} .nm{color:var(--orange);} .cm{color:var(--dim);font-style:italic;} .op{color:var(--teal);} .hi{color:var(--accent);}
+
+/* ── EXERCISE CARD ── */
+.ex{border-radius:10px;padding:16px 20px;border:1px solid rgba(137,180,250,.18);background:rgba(137,180,250,.04);margin-top:12px;}
+.ex:first-of-type{margin-top:18px;}
+.ex-n{font-family:'Space Mono',monospace;font-size:.6rem;letter-spacing:.18em;text-transform:uppercase;color:var(--blue);margin-bottom:6px;display:block;}
+.ex p{font-size:clamp(.88rem,1.35vw,1.02rem);color:var(--muted);line-height:1.65;}
+.ex p strong{color:var(--text);}
+.ic{font-family:'Space Mono',monospace;font-size:.83em;color:var(--blue);background:rgba(137,180,250,.1);padding:1px 6px;border-radius:4px;white-space:nowrap;}
+
+/* ── TITLE SLIDE ── */
+.pill{display:inline-flex;align-items:center;gap:8px;font-family:'Space Mono',monospace;font-size:.67rem;letter-spacing:.17em;text-transform:uppercase;color:var(--muted);border:1px solid var(--border);border-radius:99px;padding:6px 13px;margin-bottom:26px;}
+.pulse{width:7px;height:7px;border-radius:50%;background:var(--accent);box-shadow:0 0 8px var(--accent);animation:pulse 2s infinite;}
+@keyframes pulse{0%,100%{opacity:1;}50%{opacity:.35;}}
+.tags{display:flex;gap:9px;margin-top:24px;flex-wrap:wrap;}
+.tag{font-family:'Space Mono',monospace;font-size:.65rem;letter-spacing:.13em;text-transform:uppercase;color:var(--accent);border:1px solid rgba(127,255,110,.22);border-radius:99px;padding:5px 13px;background:rgba(127,255,110,.05);}
+
+/* ── RESTART BTN ── */
+.restart{font-family:'Space Mono',monospace;font-size:.7rem;letter-spacing:.15em;text-transform:uppercase;color:var(--accent);background:transparent;border:1px solid rgba(127,255,110,.32);border-radius:99px;padding:11px 30px;cursor:pointer;transition:background .2s,box-shadow .2s;margin-top:30px;display:inline-block;}
+.restart:hover{background:rgba(127,255,110,.08);box-shadow:0 0 18px rgba(127,255,110,.14);}
+
+/* ── PROGRESS BAR (top) ── */
+.pbar{position:fixed;top:0;left:0;width:100%;height:2px;background:transparent;z-index:900;}
+.pfill{height:100%;background:var(--accent);transition:width .5s var(--ease);box-shadow:0 0 8px rgba(127,255,110,.45);}
+
+/* ── DOT NAV ── */
+.dotnav{position:fixed;right:28px;top:50%;transform:translateY(-50%);display:flex;flex-direction:column;gap:6px;z-index:800;}
+.dn{width:5px;height:5px;border-radius:3px;background:var(--dim);cursor:pointer;transition:background .3s,height .25s,border-radius .25s;border:none;padding:0;}
+.dn.on{background:var(--accent);height:18px;border-radius:3px;}
+.dn:hover:not(.on){background:var(--muted);}
+
+/* ── ARROWS ── */
+.arrows{position:fixed;bottom:32px;right:32px;display:flex;gap:9px;z-index:800;}
+.abtn{width:42px;height:42px;border-radius:50%;background:var(--surf);border:1px solid var(--border);color:var(--muted);font-size:.95rem;cursor:pointer;display:grid;place-items:center;transition:border-color .2s,color .2s,transform .2s;font-family:'Space Mono',monospace;line-height:1;}
+.abtn:hover{border-color:var(--accent);color:var(--accent);transform:translateY(-2px);}
+
+/* ── COUNTER ── */
+.ctr{position:fixed;bottom:38px;left:32px;font-family:'Space Mono',monospace;font-size:.63rem;letter-spacing:.12em;color:var(--dim);z-index:800;}
+.ctr em{color:var(--accent);font-style:normal;}
+
+/* ── STAGGER ANIMATION ── */
+.slide-inner>*{opacity:0;transform:translateY(14px);transition:opacity .42s var(--ease),transform .42s var(--ease);}
+.slide.on .slide-inner>*:nth-child(1){opacity:1;transform:none;transition-delay:.04s;}
+.slide.on .slide-inner>*:nth-child(2){opacity:1;transform:none;transition-delay:.11s;}
+.slide.on .slide-inner>*:nth-child(3){opacity:1;transform:none;transition-delay:.18s;}
+.slide.on .slide-inner>*:nth-child(4){opacity:1;transform:none;transition-delay:.25s;}
+.slide.on .slide-inner>*:nth-child(5){opacity:1;transform:none;transition-delay:.32s;}
+.slide.on .slide-inner>*:nth-child(6){opacity:1;transform:none;transition-delay:.39s;}
+</style>
+</head>
+<body>
+
+<div class="pbar"><div class="pfill" id="pf"></div></div>
+<div class="ctr"><em id="cn">01</em> / <span id="ct">50</span></div>
+<nav class="dotnav" id="dn"></nav>
+<div class="arrows">
+  <button class="abtn" id="prev" aria-label="Previous">←</button>
+  <button class="abtn" id="next" aria-label="Next">→</button>
+</div>
+
+<div class="track" id="track">
+
+<!-- 01 ─ Title -->
+<section class="slide"><div class="slide-inner">
+  <div class="pill"><span class="pulse"></span>Part 1 of 2</div>
+  <h1>Python<br><em>Fundamentals</em></h1>
+  <p class="body">A complete beginner's guide — from zero to writing real programs.</p>
+  <div class="tags"><span class="tag">Variables</span><span class="tag">Strings</span><span class="tag">Conditionals</span><span class="tag">Loops</span></div>
+</div></section>
+
+<!-- 02 ─ What You'll Learn -->
+<section class="slide"><div class="slide-inner">
+  <div class="eyebrow">Overview</div>
+  <h2>What You <em>Will Learn</em></h2>
+  <ul class="lst">
+    <li>What programming is and how it works</li>
+    <li>Types of programming languages &amp; paradigms</li>
+    <li>Why Python and how it executes your code</li>
+    <li>Installing Python and running your first program</li>
+    <li>Variables, data types, strings, conditionals, and loops</li>
+  </ul>
+</div></section>
+
+<!-- 03 ─ What is Programming -->
+<section class="slide"><div class="slide-inner">
+  <div class="eyebrow">Chapter 1</div>
+  <h2>What is <em>Programming?</em></h2>
+  <p class="body">Programming is the art of giving very detailed, step-by-step instructions to a computer — like giving precise directions to someone who has never visited your house.</p>
+  <div class="call call-g"><span class="call-label">Key Idea</span>Computers are incredibly literal. They can't fill in gaps or make assumptions — every instruction must be exact.</div>
+</div></section>
+
+<!-- 04 ─ Recipe Analogy -->
+<section class="slide"><div class="slide-inner">
+  <div class="eyebrow">Chapter 1</div>
+  <h2>Programming is Like <em>a Recipe</em></h2>
+  <div class="cols">
+    <div class="call call-r"><span class="call-label">Traditional Recipe</span>"Add some flour and mix until it looks right"</div>
+    <div class="call call-g"><span class="call-label">Programming Recipe</span>1. Add exactly 2 cups of flour<br>2. Mix for 3 minutes at medium speed<br>3. If too dry, add 1 tbsp of water<br>4. Repeat step 3 until consistent</div>
+  </div>
+</div></section>
+
+<!-- 05 ─ Programming Languages -->
+<section class="slide"><div class="slide-inner">
+  <div class="eyebrow">Chapter 2</div>
+  <h2>Understanding <em>Programming Languages</em></h2>
+  <p class="body">A programming language is a formal system for giving instructions to a computer. Like human languages, each has grammar, vocabulary, and syntax — designed for a specific purpose.</p>
+  <ul class="lst">
+    <li><strong>Hammer (C++)</strong> — powerful and precise, requires skill</li>
+    <li><strong>Electric Drill (Python)</strong> — easier, versatile, great for many tasks</li>
+    <li><strong>Screwdriver (JavaScript)</strong> — specialized but excellent at its domain</li>
+  </ul>
+</div></section>
+
+<!-- 06 ─ Abstraction -->
+<section class="slide"><div class="slide-inner">
+  <div class="eyebrow">Chapter 3</div>
+  <h2>By Level of <em>Abstraction</em></h2>
+  <div class="cols">
+    <div class="call call-r"><span class="call-label">Low-Level Languages</span>Close to machine language. Assembly, Machine Code.<br><br><em>Like GPS coordinates instead of street names.</em></div>
+    <div class="call call-g"><span class="call-label">High-Level Languages</span>More like natural human language. Python, Java, C++.<br><br><em>Like familiar landmarks and street names.</em></div>
+  </div>
+</div></section>
+
+<!-- 07 ─ Paradigms -->
+<section class="slide"><div class="slide-inner">
+  <div class="eyebrow">Chapter 3</div>
+  <h2>By Programming <em>Paradigm</em></h2>
+  <ul class="lst">
+    <li><strong>Procedural</strong> — step-by-step recipe, focus on sequence. <em>(C, Pascal)</em></li>
+    <li><strong>Object-Oriented (OOP)</strong> — organise code into objects with properties &amp; behaviors. <em>(Java, C++, Python)</em></li>
+    <li><strong>Functional</strong> — transform data through mathematical functions. <em>(Haskell, Lisp)</em></li>
+  </ul>
+</div></section>
+
+<!-- 08 ─ Execution Method -->
+<section class="slide"><div class="slide-inner">
+  <div class="eyebrow">Chapter 3</div>
+  <h2>By <em>Execution Method</em></h2>
+  <div class="cols">
+    <div class="call call-y"><span class="call-label">Compiled Languages</span>Entire source translated to machine code before running. Fast, but must recompile on any change.<br><br><strong>C++, Rust, Go</strong></div>
+    <div class="call call-g"><span class="call-label">Interpreted Languages</span>Translated line by line at runtime. Immediate feedback, platform-independent.<br><br><strong>Python, JavaScript, Ruby</strong></div>
+  </div>
+</div></section>
+
+<!-- 09 ─ Intro to Python -->
+<section class="slide"><div class="slide-inner">
+  <div class="eyebrow">Chapter 4</div>
+  <h2>Introduction to <em>Python</em></h2>
+  <div class="call call-g"><span class="call-label">Why Python?</span>Python is like the Swiss Army knife of programming — versatile, reliable, and easy to use. Created by Guido van Rossum in 1991 with one goal: code should be readable.</div>
+  <ul class="lst">
+    <li><strong>Readability</strong> — code looks almost like English</li>
+    <li><strong>Versatility</strong> — web, data science, AI, automation, games</li>
+    <li><strong>Beginner-Friendly</strong> — handles complexity so you can focus on solving problems</li>
+    <li><strong>Huge Community</strong> — millions of developers, endless resources</li>
+  </ul>
+</div></section>
+
+<!-- 10 ─ Python Reads Like English -->
+<section class="slide"><div class="slide-inner">
+  <div class="eyebrow">Chapter 4</div>
+  <h2>Python Reads Like <em>English</em></h2>
+  <div class="win">
+    <div class="tbar"><div class="d r"></div><div class="d y"></div><div class="d g"></div><span class="fn">example.py</span></div>
+    <pre><span class="cm"># Almost plain English</span>
+<span class="kw">if</span> age <span class="op">&gt;=</span> <span class="nm">18</span>:
+    <span class="fc">print</span>(<span class="st">"You can vote!"</span>)
+<span class="kw">else</span>:
+    <span class="fc">print</span>(<span class="st">"You're too young to vote."</span>)</pre>
+  </div>
+  <p class="body" style="margin-top:14px;">The "Zen of Python": <strong>beautiful is better than ugly</strong> · <strong>simple is better than complex</strong> · <strong>readability counts</strong>.</p>
+</div></section>
+
+<!-- 11 ─ Compilation vs Interpretation -->
+<section class="slide"><div class="slide-inner">
+  <div class="eyebrow">Chapter 5</div>
+  <h2>How Python <em>Executes Code</em></h2>
+  <div class="cols">
+    <div class="call call-y"><span class="call-label">Compiled (Meal Kit)</span>Source → Compiler → Machine Code → Execution.<br><em>Pros: very fast. Cons: recompile for every change.</em></div>
+    <div class="call call-g"><span class="call-label">Interpreted (Personal Chef)</span>Source → Interpreter → Real-time execution.<br><em>Pros: immediate feedback, platform-independent.</em></div>
+  </div>
+</div></section>
+
+<!-- 12 ─ Python Hybrid -->
+<section class="slide"><div class="slide-inner">
+  <div class="eyebrow">Chapter 5</div>
+  <h2>Python's <em>Hybrid Approach</em></h2>
+  <div class="call call-g"><span class="call-label">Best of Both Worlds</span>Python first compiles your code to <strong>bytecode (.pyc)</strong>, then the Python Virtual Machine interprets it — giving reasonable speed with the flexibility of interpretation.</div>
+  <ul class="lst" style="margin-top:14px;">
+    <li><strong>.py files</strong> — your human-readable source code</li>
+    <li><strong>.pyc files</strong> — intermediate bytecode (like mise en place)</li>
+    <li><strong>Python VM</strong> — reads and executes the bytecode</li>
+  </ul>
+</div></section>
+
+<!-- 13 ─ Installing Python -->
+<section class="slide"><div class="slide-inner">
+  <div class="eyebrow">Chapter 6</div>
+  <h2>Installing <em>Python on Windows</em></h2>
+  <ul class="lst">
+    <li><strong>Step 1</strong> — Visit python.org → Downloads → get the latest Python 3.x.x</li>
+    <li><strong>Step 2</strong> — Run installer, tick <strong>"Add Python to PATH"</strong>, click Install Now</li>
+    <li><strong>Step 3</strong> — Open CMD → type <span class="ic">python --version</span></li>
+    <li><strong>Step 4</strong> — Type <span class="ic">python</span> → run <span class="ic">print("Hello, World!")</span></li>
+  </ul>
+  <div class="call call-y" style="margin-top:16px;"><span class="call-label">Troubleshooting</span>If <span class="ic">python</span> doesn't work, try <span class="ic">py</span> instead.</div>
+</div></section>
+
+<!-- 14 ─ Hello World -->
+<section class="slide"><div class="slide-inner">
+  <div class="eyebrow">Chapter 6</div>
+  <h2>Your First <em>Python Program</em></h2>
+  <div class="win">
+    <div class="tbar"><div class="d r"></div><div class="d y"></div><div class="d g"></div><span class="fn">hello.py</span></div>
+    <pre><span class="fc">print</span>(<span class="st">"Hello, World!"</span>)
+
+<span class="cm"># Run from terminal:</span>
+<span class="cm"># python hello.py</span>
+
+<span class="cm"># Output:</span>
+<span class="cm"># Hello, World!</span></pre>
+  </div>
+</div></section>
+
+<!-- 15 ─ Variables Intro -->
+<section class="slide"><div class="slide-inner">
+  <div class="eyebrow">Chapter 7 · Variables</div>
+  <h2>Variables: Your <em>Storage Boxes</em></h2>
+  <div class="call call-g"><span class="call-label">Concept</span>A variable is a labeled box in memory. You assign a name and store data — Python figures out the type automatically.</div>
+  <div class="win">
+    <div class="tbar"><div class="d r"></div><div class="d y"></div><div class="d g"></div><span class="fn">variables.py</span></div>
+    <pre>name       <span class="op">=</span> <span class="st">"Alice"</span>   <span class="cm"># box labeled 'name'</span>
+age        <span class="op">=</span> <span class="nm">25</span>        <span class="cm"># box labeled 'age'</span>
+height     <span class="op">=</span> <span class="nm">5.6</span>       <span class="cm"># decimal</span>
+is_student <span class="op">=</span> <span class="kw">True</span>      <span class="cm"># boolean</span></pre>
+  </div>
+</div></section>
+
+<!-- 16 ─ Naming Rules -->
+<section class="slide"><div class="slide-inner">
+  <div class="eyebrow">Chapter 7 · Variables</div>
+  <h2>Variable <em>Naming Rules</em></h2>
+  <div class="win">
+    <div class="tbar"><div class="d r"></div><div class="d y"></div><div class="d g"></div><span class="fn">naming.py</span></div>
+    <pre><span class="cm"># ✓ Good names</span>
+user_name    <span class="op">=</span> <span class="st">"John"</span>
+total_score  <span class="op">=</span> <span class="nm">95</span>
+is_game_over <span class="op">=</span> <span class="kw">False</span>
+
+<span class="cm"># ✗ Bad names — will throw errors</span>
+<span class="cm"># 2name    = "John"   → can't start with a number</span>
+<span class="cm"># user-name = "John"  → hyphens not allowed</span>
+<span class="cm"># class    = "Math"   → reserved keyword</span></pre>
+  </div>
+  <p class="body" style="margin-top:12px;"><strong>snake_case</strong> for variables &nbsp;·&nbsp; <strong>ALL_CAPS</strong> for constants</p>
+</div></section>
+
+<!-- 17 ─ Data Types -->
+<section class="slide"><div class="slide-inner">
+  <div class="eyebrow">Chapter 7 · Variables</div>
+  <h2>Core <em>Data Types</em></h2>
+  <table class="tbl">
+    <thead><tr><th>Type</th><th>Example</th><th>Description</th></tr></thead>
+    <tbody>
+      <tr><td>int</td><td>42</td><td>Whole numbers</td></tr>
+      <tr><td>float</td><td>3.14159</td><td>Decimal numbers</td></tr>
+      <tr><td>str</td><td>"Hello"</td><td>Text / String</td></tr>
+      <tr><td>bool</td><td>True / False</td><td>Logical values</td></tr>
+      <tr><td>complex</td><td>2+3j</td><td>Complex numbers</td></tr>
+    </tbody>
+  </table>
+  <div class="win" style="margin-top:12px;">
+    <div class="tbar"><div class="d r"></div><div class="d y"></div><div class="d g"></div><span class="fn">types.py</span></div>
+    <pre><span class="fc">print</span>(<span class="fc">type</span>(<span class="nm">42</span>))       <span class="cm"># &lt;class 'int'&gt;</span>
+<span class="fc">print</span>(<span class="fc">type</span>(<span class="st">"Hello"</span>))  <span class="cm"># &lt;class 'str'&gt;</span>
+<span class="fc">print</span>(<span class="fc">type</span>(<span class="kw">True</span>))     <span class="cm"># &lt;class 'bool'&gt;</span></pre>
+  </div>
+</div></section>
+
+<!-- 18 ─ Variables in Action -->
+<section class="slide"><div class="slide-inner">
+  <div class="eyebrow">Chapter 7 · Variables</div>
+  <h2>Variables in <em>Action</em></h2>
+  <div class="win">
+    <div class="tbar"><div class="d r"></div><div class="d y"></div><div class="d g"></div><span class="fn">variables_example.py</span></div>
+    <pre>first_name <span class="op">=</span> <span class="st">"Emma"</span>
+last_name  <span class="op">=</span> <span class="st">"Watson"</span>
+full_name  <span class="op">=</span> first_name <span class="op">+</span> <span class="st">" "</span> <span class="op">+</span> last_name
+age        <span class="op">=</span> <span class="nm">33</span>
+birth_year <span class="op">=</span> <span class="nm">2024</span> <span class="op">-</span> age
+
+<span class="fc">print</span>(<span class="st">f"Hello, <span class="hi">{full_name}</span>!"</span>)
+<span class="fc">print</span>(<span class="st">f"Born in <span class="hi">{birth_year}</span>"</span>)
+
+item_price <span class="op">=</span> <span class="nm">29.99</span> ; quantity <span class="op">=</span> <span class="nm">3</span>
+final_cost <span class="op">=</span> item_price <span class="op">*</span> quantity <span class="op">*</span> <span class="nm">1.08</span>
+<span class="fc">print</span>(<span class="st">f"Total: $<span class="hi">{final_cost:.2f}</span>"</span>)</pre>
+  </div>
+</div></section>
+
+<!-- 19 ─ Variable Exercises -->
+<section class="slide"><div class="slide-inner">
+  <div class="eyebrow">Exercises · Variables</div>
+  <h2>Variable <em>Practice</em></h2>
+  <div class="ex"><span class="ex-n">Exercise 01 — Personal Profile</span><p>Create variables for <span class="ic">name</span>, <span class="ic">age</span>, <span class="ic">city</span>, and <span class="ic">hobby</span>. Print a complete sentence using all four.</p></div>
+  <div class="ex"><span class="ex-n">Exercise 02 — Rectangle Calculator</span><p>Set <span class="ic">length = 10</span> and <span class="ic">width = 5</span>. Calculate and print the <strong>area</strong> and <strong>perimeter</strong>.</p></div>
+  <div class="ex"><span class="ex-n">Exercise 03 — Temperature Converter</span><p>Start with <span class="ic">celsius = 25</span>. Apply <span class="ic">fahrenheit = (celsius * 9/5) + 32</span> and print both values.</p></div>
+</div></section>
+
+<!-- 20 ─ Strings Intro -->
+<section class="slide"><div class="slide-inner">
+  <div class="eyebrow">Chapter 7 · Strings</div>
+  <h2>Strings: Working <em>with Text</em></h2>
+  <div class="call call-g"><span class="call-label">Concept</span>Strings are sequences of characters — like a necklace of letters, numbers, and symbols. In Python they're incredibly versatile.</div>
+  <div class="win">
+    <div class="tbar"><div class="d r"></div><div class="d y"></div><div class="d g"></div><span class="fn">strings.py</span></div>
+    <pre>single <span class="op">=</span> <span class="st">'Hello, World!'</span>
+double <span class="op">=</span> <span class="st">"Hello, World!"</span>
+triple <span class="op">=</span> <span class="st">"""This is a
+multi-line string"""</span>
+mixed  <span class="op">=</span> <span class="st">"I have 3 cats and 2 dogs! 🐱🐶"</span></pre>
+  </div>
+</div></section>
+
+<!-- 21 ─ String Operations -->
+<section class="slide"><div class="slide-inner">
+  <div class="eyebrow">Chapter 7 · Strings</div>
+  <h2>String <em>Operations</em></h2>
+  <div class="win">
+    <div class="tbar"><div class="d r"></div><div class="d y"></div><div class="d g"></div><span class="fn">string_ops.py</span></div>
+    <pre>first <span class="op">=</span> <span class="st">"John"</span> ; last <span class="op">=</span> <span class="st">"Doe"</span>
+
+<span class="cm"># Concatenation</span>
+full <span class="op">=</span> first <span class="op">+</span> <span class="st">" "</span> <span class="op">+</span> last
+<span class="fc">print</span>(full)         <span class="cm"># John Doe</span>
+
+<span class="cm"># Repetition</span>
+<span class="fc">print</span>(<span class="st">"Ha"</span> <span class="op">*</span> <span class="nm">3</span>)      <span class="cm"># HaHaHa</span>
+
+<span class="cm"># Length &amp; Indexing</span>
+<span class="fc">print</span>(<span class="fc">len</span>(full))     <span class="cm"># 8</span>
+<span class="fc">print</span>(full[<span class="nm">0</span>])      <span class="cm"># J  (first char)</span>
+<span class="fc">print</span>(full[<span class="op">-</span><span class="nm">1</span>])     <span class="cm"># e  (last char)</span></pre>
+  </div>
+</div></section>
+
+<!-- 22 ─ String Methods -->
+<section class="slide"><div class="slide-inner">
+  <div class="eyebrow">Chapter 7 · Strings</div>
+  <h2>String <em>Methods</em></h2>
+  <div class="win">
+    <div class="tbar"><div class="d r"></div><div class="d y"></div><div class="d g"></div><span class="fn">string_methods.py</span></div>
+    <pre>text <span class="op">=</span> <span class="st">"  Hello, Python World!  "</span>
+
+<span class="fc">print</span>(text.<span class="fc">upper</span>())
+<span class="fc">print</span>(text.<span class="fc">strip</span>())                     <span class="cm"># "Hello, Python World!"</span>
+<span class="fc">print</span>(text.<span class="fc">replace</span>(<span class="st">"Python"</span>, <span class="st">"Amazing"</span>))
+<span class="fc">print</span>(<span class="st">"Python"</span> <span class="kw">in</span> text)                 <span class="cm"># True</span>
+
+<span class="cm"># Split and join</span>
+words  <span class="op">=</span> <span class="st">"apple,banana,cherry"</span>.<span class="fc">split</span>(<span class="st">","</span>)
+joined <span class="op">=</span> <span class="st">"-"</span>.<span class="fc">join</span>(words)
+<span class="fc">print</span>(joined)                           <span class="cm"># apple-banana-cherry</span></pre>
+  </div>
+</div></section>
+
+<!-- 23 ─ String Formatting -->
+<section class="slide"><div class="slide-inner">
+  <div class="eyebrow">Chapter 7 · Strings</div>
+  <h2>String <em>Formatting</em></h2>
+  <div class="win">
+    <div class="tbar"><div class="d r"></div><div class="d y"></div><div class="d g"></div><span class="fn">formatting.py</span></div>
+    <pre>name  <span class="op">=</span> <span class="st">"Alice"</span> ; age <span class="op">=</span> <span class="nm">30</span> ; score <span class="op">=</span> <span class="nm">95.5</span>
+
+<span class="cm"># f-strings — recommended (Python 3.6+)</span>
+<span class="fc">print</span>(<span class="st">f"Hello, <span class="hi">{name}</span>! You are <span class="hi">{age}</span> years old."</span>)
+<span class="fc">print</span>(<span class="st">f"Score: <span class="hi">{score:.1f}</span>%"</span>)
+
+<span class="cm"># .format() method</span>
+<span class="fc">print</span>(<span class="st">"Hello, {}! You are {} years old."</span>.<span class="fc">format</span>(name, age))
+
+<span class="cm"># % operator (older style)</span>
+<span class="fc">print</span>(<span class="st">"Hello, %s! You are %d years old."</span> <span class="op">%</span> (name, age))</pre>
+  </div>
+</div></section>
+
+<!-- 24 ─ Strings in Action -->
+<section class="slide"><div class="slide-inner">
+  <div class="eyebrow">Chapter 7 · Strings</div>
+  <h2>Strings in <em>Action</em></h2>
+  <div class="win">
+    <div class="tbar"><div class="d r"></div><div class="d y"></div><div class="d g"></div><span class="fn">text_analyzer.py</span></div>
+    <pre>text <span class="op">=</span> <span class="st">"The quick brown fox jumps over the lazy dog"</span>
+
+<span class="fc">print</span>(<span class="st">f"Length : <span class="hi">{len(text)}</span> characters"</span>)
+<span class="fc">print</span>(<span class="st">f"Words  : <span class="hi">{len(text.split())}</span> words"</span>)
+<span class="fc">print</span>(<span class="st">f"Upper  : <span class="hi">{text.upper()}</span>"</span>)
+<span class="fc">print</span>(<span class="st">f"Title  : <span class="hi">{text.title()}</span>"</span>)
+<span class="fc">print</span>(<span class="st">f"Has fox: <span class="hi">{'fox' in text}</span>"</span>)</pre>
+  </div>
+</div></section>
+
+<!-- 25 ─ String Exercises -->
+<section class="slide"><div class="slide-inner">
+  <div class="eyebrow">Exercises · Strings</div>
+  <h2>String <em>Practice</em></h2>
+  <div class="ex"><span class="ex-n">Exercise 01 — Name Formatter</span><p>Given <span class="ic">full_name = "jOhN dOe"</span>, convert it to <span class="ic">"John Doe"</span>. Then print first and last names separately.</p></div>
+  <div class="ex"><span class="ex-n">Exercise 02 — Word Counter</span><p>Given <span class="ic">sentence = "Python is an amazing programming language"</span>, count the <strong>words</strong>, <strong>characters</strong> (with spaces), and occurrences of <span class="ic">'a'</span>.</p></div>
+  <div class="ex"><span class="ex-n">Exercise 03 — Simple Cipher</span><p>Given <span class="ic">message = "Hello"</span>, replace each letter with the next in the alphabet (H→I, e→f…). Hint: use <span class="ic">ord()</span> and <span class="ic">chr()</span>.</p></div>
+</div></section>
+
+<!-- 26 ─ Conditionals Intro -->
+<section class="slide"><div class="slide-inner">
+  <div class="eyebrow">Chapter 7 · Conditionals</div>
+  <h2>Conditionals: <em>Making Decisions</em></h2>
+  <div class="call call-g"><span class="call-label">Concept</span>Conditionals are the decision-making brain of your program — like traffic lights controlling code flow based on conditions.</div>
+  <ul class="lst" style="margin-top:16px;">
+    <li>If it's raining → wear a raincoat</li>
+    <li>Else if it's cold → wear a jacket</li>
+    <li>Else if it's hot → wear a t-shirt</li>
+    <li>Else → wear normal clothes</li>
+  </ul>
+</div></section>
+
+<!-- 27 ─ Basic If -->
+<section class="slide"><div class="slide-inner">
+  <div class="eyebrow">Chapter 7 · Conditionals</div>
+  <h2>Basic <em>If Statement</em></h2>
+  <div class="win">
+    <div class="tbar"><div class="d r"></div><div class="d y"></div><div class="d g"></div><span class="fn">conditionals.py</span></div>
+    <pre>age <span class="op">=</span> <span class="nm">18</span>
+
+<span class="kw">if</span> age <span class="op">&gt;=</span> <span class="nm">18</span>:
+    <span class="fc">print</span>(<span class="st">"You can vote!"</span>)
+    <span class="fc">print</span>(<span class="st">"You're an adult!"</span>)
+
+<span class="cm"># This always runs — outside the if block</span>
+<span class="fc">print</span>(<span class="st">"This always runs"</span>)</pre>
+  </div>
+</div></section>
+
+<!-- 28 ─ If-Else -->
+<section class="slide"><div class="slide-inner">
+  <div class="eyebrow">Chapter 7 · Conditionals</div>
+  <h2>If <em>Else</em></h2>
+  <div class="win">
+    <div class="tbar"><div class="d r"></div><div class="d y"></div><div class="d g"></div><span class="fn">if_else.py</span></div>
+    <pre>password   <span class="op">=</span> <span class="st">"secret123"</span>
+user_input <span class="op">=</span> <span class="st">"secret123"</span>
+
+<span class="kw">if</span> password <span class="op">==</span> user_input:
+    <span class="fc">print</span>(<span class="st">"Access granted!"</span>)
+    <span class="fc">print</span>(<span class="st">"Welcome to the system!"</span>)
+<span class="kw">else</span>:
+    <span class="fc">print</span>(<span class="st">"Access denied!"</span>)
+    <span class="fc">print</span>(<span class="st">"Incorrect password!"</span>)</pre>
+  </div>
+</div></section>
+
+<!-- 29 ─ elif Chain -->
+<section class="slide"><div class="slide-inner">
+  <div class="eyebrow">Chapter 7 · Conditionals</div>
+  <h2>If <em>Elif Else</em> Chains</h2>
+  <div class="win">
+    <div class="tbar"><div class="d r"></div><div class="d y"></div><div class="d g"></div><span class="fn">grading.py</span></div>
+    <pre>score <span class="op">=</span> <span class="nm">87</span>
+
+<span class="kw">if</span>   score <span class="op">&gt;=</span> <span class="nm">90</span>: grade <span class="op">=</span> <span class="st">"A"</span> <span class="cm">; print("Excellent work!")</span>
+<span class="kw">elif</span> score <span class="op">&gt;=</span> <span class="nm">80</span>: grade <span class="op">=</span> <span class="st">"B"</span> <span class="cm">; print("Good job!")</span>
+<span class="kw">elif</span> score <span class="op">&gt;=</span> <span class="nm">70</span>: grade <span class="op">=</span> <span class="st">"C"</span> <span class="cm">; print("Not bad!")</span>
+<span class="kw">elif</span> score <span class="op">&gt;=</span> <span class="nm">60</span>: grade <span class="op">=</span> <span class="st">"D"</span> <span class="cm">; print("Study more.")</span>
+<span class="kw">else</span>:            grade <span class="op">=</span> <span class="st">"F"</span> <span class="cm">; print("Try again!")</span>
+
+<span class="fc">print</span>(<span class="st">f"Your grade is: <span class="hi">{grade}</span>"</span>)</pre>
+  </div>
+</div></section>
+
+<!-- 30 ─ Comparison & Logical -->
+<section class="slide"><div class="slide-inner">
+  <div class="eyebrow">Chapter 7 · Conditionals</div>
+  <h2>Comparison &amp; <em>Logical Operators</em></h2>
+  <div class="win">
+    <div class="tbar"><div class="d r"></div><div class="d y"></div><div class="d g"></div><span class="fn">operators.py</span></div>
+    <pre><span class="cm"># Comparison</span>
+x <span class="op">==</span> y  <span class="cm">; </span> x <span class="op">!=</span> y  <span class="cm">; </span> x <span class="op">&gt;</span> y  <span class="cm">; </span> x <span class="op">&lt;=</span> y
+
+<span class="cm"># Logical — AND (all must be True)</span>
+<span class="kw">if</span> age <span class="op">&gt;=</span> <span class="nm">18</span> <span class="kw">and</span> has_license:
+    <span class="fc">print</span>(<span class="st">"You can drive!"</span>)
+
+<span class="cm"># Logical — OR (at least one must be True)</span>
+<span class="kw">if</span> is_weekend <span class="kw">or</span> is_holiday:
+    <span class="fc">print</span>(<span class="st">"No work today!"</span>)
+
+<span class="cm"># Logical — NOT (inverts the boolean)</span>
+<span class="kw">if</span> <span class="kw">not</span> is_raining:
+    <span class="fc">print</span>(<span class="st">"Let's go for a walk!"</span>)</pre>
+  </div>
+</div></section>
+
+<!-- 31 ─ Nested Conditionals -->
+<section class="slide"><div class="slide-inner">
+  <div class="eyebrow">Chapter 7 · Conditionals</div>
+  <h2>Nested <em>Conditionals</em></h2>
+  <div class="win">
+    <div class="tbar"><div class="d r"></div><div class="d y"></div><div class="d g"></div><span class="fn">nested.py</span></div>
+    <pre>weather <span class="op">=</span> <span class="st">"sunny"</span> ; temperature <span class="op">=</span> <span class="nm">75</span>
+
+<span class="kw">if</span> weather <span class="op">==</span> <span class="st">"sunny"</span>:
+    <span class="kw">if</span> temperature <span class="op">&gt;</span> <span class="nm">70</span>:
+        <span class="fc">print</span>(<span class="st">"Perfect day for the beach!"</span>)
+    <span class="kw">else</span>:
+        <span class="fc">print</span>(<span class="st">"Sunny but cold. Walk in the park?"</span>)
+<span class="kw">else</span>:
+    <span class="kw">if</span> weather <span class="op">==</span> <span class="st">"rainy"</span>:
+        <span class="fc">print</span>(<span class="st">"Stay inside and read!"</span>)
+    <span class="kw">else</span>:
+        <span class="fc">print</span>(<span class="st">"Check the weather and decide!"</span>)</pre>
+  </div>
+</div></section>
+
+<!-- 32 ─ Calculator Example -->
+<section class="slide"><div class="slide-inner">
+  <div class="eyebrow">Chapter 7 · Conditionals</div>
+  <h2>Example: <em>Simple Calculator</em></h2>
+  <div class="win">
+    <div class="tbar"><div class="d r"></div><div class="d y"></div><div class="d g"></div><span class="fn">calculator.py</span></div>
+    <pre>num1 <span class="op">=</span> <span class="nm">10</span>  ;  num2 <span class="op">=</span> <span class="nm">5</span>  ;  op <span class="op">=</span> <span class="st">"/"</span>
+
+<span class="kw">if</span>   op <span class="op">==</span> <span class="st">"+"</span>: result <span class="op">=</span> num1 <span class="op">+</span> num2
+<span class="kw">elif</span> op <span class="op">==</span> <span class="st">"-"</span>: result <span class="op">=</span> num1 <span class="op">-</span> num2
+<span class="kw">elif</span> op <span class="op">==</span> <span class="st">"*"</span>: result <span class="op">=</span> num1 <span class="op">*</span> num2
+<span class="kw">elif</span> op <span class="op">==</span> <span class="st">"/"</span>:
+    <span class="kw">if</span> num2 <span class="op">!=</span> <span class="nm">0</span>: result <span class="op">=</span> num1 <span class="op">/</span> num2
+    <span class="kw">else</span>:         result <span class="op">=</span> <span class="st">"Error: division by zero"</span>
+<span class="kw">else</span>: result <span class="op">=</span> <span class="st">"Error: unknown operation"</span>
+
+<span class="fc">print</span>(<span class="st">f"<span class="hi">{num1}</span> <span class="hi">{op}</span> <span class="hi">{num2}</span> = <span class="hi">{result}</span>"</span>)</pre>
+  </div>
+</div></section>
+
+<!-- 33 ─ Conditional Exercises -->
+<section class="slide"><div class="slide-inner">
+  <div class="eyebrow">Exercises · Conditionals</div>
+  <h2>Conditional <em>Practice</em></h2>
+  <div class="ex"><span class="ex-n">Exercise 01 — Grade Calculator</span><p>Assign letter grades from a score including + and − grades (87 = B+, 83 = B−). Ranges: 90–100 = A · 80–89 = B · 70–79 = C · 60–69 = D · below 60 = F.</p></div>
+  <div class="ex"><span class="ex-n">Exercise 02 — Leap Year Checker</span><p>Determine if a year is a leap year. Rule: divisible by 4 AND not by 100, OR divisible by 400. Test: 2000, 1900, 2024, 2023.</p></div>
+  <div class="ex"><span class="ex-n">Exercise 03 — Simple Login System</span><p>Using <span class="ic">correct_username = "admin"</span> and <span class="ic">correct_password = "password123"</span>, check both credentials and respond to every possible scenario.</p></div>
+</div></section>
+
+<!-- 34 ─ Loops Intro -->
+<section class="slide"><div class="slide-inner">
+  <div class="eyebrow">Chapter 7 · Loops</div>
+  <h2>Loops: <em>Repeating Actions</em></h2>
+  <div class="call call-g"><span class="call-label">Concept</span>Loops let you execute the same code multiple times without writing it over and over — like the repeat button on a music player.</div>
+  <div class="call call-b" style="margin-top:12px;"><span class="call-label">Real-World Analogy</span>Instead of writing "wash dish" 10 times, you write: <strong>"repeat 'wash dish' 10 times."</strong></div>
+</div></section>
+
+<!-- 35 ─ For Loop -->
+<section class="slide"><div class="slide-inner">
+  <div class="eyebrow">Chapter 7 · Loops</div>
+  <h2>The <em>For Loop</em></h2>
+  <div class="win">
+    <div class="tbar"><div class="d r"></div><div class="d y"></div><div class="d g"></div><span class="fn">for_loop.py</span></div>
+    <pre><span class="cm"># Loop through a range</span>
+<span class="kw">for</span> number <span class="kw">in</span> <span class="fc">range</span>(<span class="nm">1</span>, <span class="nm">6</span>):
+    <span class="fc">print</span>(<span class="st">f"Count: <span class="hi">{number}</span>"</span>)
+
+<span class="cm"># Loop through a list</span>
+<span class="kw">for</span> fruit <span class="kw">in</span> [<span class="st">"apple"</span>, <span class="st">"banana"</span>, <span class="st">"cherry"</span>]:
+    <span class="fc">print</span>(<span class="st">f"I have a <span class="hi">{fruit}</span>"</span>)
+
+<span class="cm"># Loop through a string</span>
+<span class="kw">for</span> letter <span class="kw">in</span> <span class="st">"Python"</span>:
+    <span class="fc">print</span>(<span class="st">f"Letter: <span class="hi">{letter}</span>"</span>)</pre>
+  </div>
+</div></section>
+
+<!-- 36 ─ range() -->
+<section class="slide"><div class="slide-inner">
+  <div class="eyebrow">Chapter 7 · Loops</div>
+  <h2>The <em>range()</em> Function</h2>
+  <div class="win">
+    <div class="tbar"><div class="d r"></div><div class="d y"></div><div class="d g"></div><span class="fn">range_function.py</span></div>
+    <pre><span class="kw">for</span> i <span class="kw">in</span> <span class="fc">range</span>(<span class="nm">5</span>):          <span class="cm"># 0, 1, 2, 3, 4</span>
+    <span class="fc">print</span>(i)
+
+<span class="kw">for</span> i <span class="kw">in</span> <span class="fc">range</span>(<span class="nm">2</span>, <span class="nm">7</span>):        <span class="cm"># 2, 3, 4, 5, 6</span>
+    <span class="fc">print</span>(i)
+
+<span class="kw">for</span> i <span class="kw">in</span> <span class="fc">range</span>(<span class="nm">0</span>, <span class="nm">10</span>, <span class="nm">2</span>):    <span class="cm"># 0, 2, 4, 6, 8</span>
+    <span class="fc">print</span>(i)
+
+<span class="kw">for</span> i <span class="kw">in</span> <span class="fc">range</span>(<span class="nm">10</span>, <span class="nm">0</span>, <span class="op">-</span><span class="nm">1</span>):   <span class="cm"># Countdown</span>
+    <span class="fc">print</span>(<span class="st">f"Countdown: <span class="hi">{i}</span>"</span>)
+<span class="fc">print</span>(<span class="st">"Blast off! 🚀"</span>)</pre>
+  </div>
+</div></section>
+
+<!-- 37 ─ While Loop -->
+<section class="slide"><div class="slide-inner">
+  <div class="eyebrow">Chapter 7 · Loops</div>
+  <h2>The <em>While Loop</em></h2>
+  <div class="win">
+    <div class="tbar"><div class="d r"></div><div class="d y"></div><div class="d g"></div><span class="fn">while_loop.py</span></div>
+    <pre>count <span class="op">=</span> <span class="nm">1</span>
+<span class="kw">while</span> count <span class="op">&lt;=</span> <span class="nm">5</span>:
+    <span class="fc">print</span>(<span class="st">f"Count is: <span class="hi">{count}</span>"</span>)
+    count <span class="op">+=</span> <span class="nm">1</span>
+
+<span class="cm"># Exit on condition</span>
+user_input <span class="op">=</span> <span class="st">""</span>
+<span class="kw">while</span> user_input <span class="op">!=</span> <span class="st">"quit"</span>:
+    user_input <span class="op">=</span> <span class="fc">input</span>(<span class="st">"Enter 'quit' to exit: "</span>)
+    <span class="kw">if</span> user_input <span class="op">!=</span> <span class="st">"quit"</span>:
+        <span class="fc">print</span>(<span class="st">f"You entered: <span class="hi">{user_input}</span>"</span>)
+<span class="fc">print</span>(<span class="st">"Goodbye!"</span>)</pre>
+  </div>
+</div></section>
+
+<!-- 38 ─ Loop Control -->
+<section class="slide"><div class="slide-inner">
+  <div class="eyebrow">Chapter 7 · Loops</div>
+  <h2>Loop <em>Control Statements</em></h2>
+  <div class="win">
+    <div class="tbar"><div class="d r"></div><div class="d y"></div><div class="d g"></div><span class="fn">loop_control.py</span></div>
+    <pre><span class="cm"># break — exits the loop immediately</span>
+<span class="kw">for</span> number <span class="kw">in</span> <span class="fc">range</span>(<span class="nm">1</span>, <span class="nm">10</span>):
+    <span class="kw">if</span> number <span class="op">%</span> <span class="nm">2</span> <span class="op">==</span> <span class="nm">0</span>:
+        <span class="fc">print</span>(<span class="st">f"First even: <span class="hi">{number}</span>"</span>)
+        <span class="kw">break</span>
+
+<span class="cm"># continue — skips to the next iteration</span>
+<span class="kw">for</span> number <span class="kw">in</span> <span class="fc">range</span>(<span class="nm">1</span>, <span class="nm">10</span>):
+    <span class="kw">if</span> number <span class="op">%</span> <span class="nm">2</span> <span class="op">==</span> <span class="nm">0</span>:
+        <span class="kw">continue</span>
+    <span class="fc">print</span>(<span class="st">f"Odd: <span class="hi">{number}</span>"</span>)</pre>
+  </div>
+</div></section>
+
+<!-- 39 ─ Nested Loops -->
+<section class="slide"><div class="slide-inner">
+  <div class="eyebrow">Chapter 7 · Loops</div>
+  <h2>Nested <em>Loops</em></h2>
+  <div class="win">
+    <div class="tbar"><div class="d r"></div><div class="d y"></div><div class="d g"></div><span class="fn">nested_loops.py</span></div>
+    <pre><span class="cm"># Multiplication table</span>
+<span class="kw">for</span> i <span class="kw">in</span> <span class="fc">range</span>(<span class="nm">1</span>, <span class="nm">4</span>):
+    <span class="kw">for</span> j <span class="kw">in</span> <span class="fc">range</span>(<span class="nm">1</span>, <span class="nm">4</span>):
+        <span class="fc">print</span>(<span class="st">f"<span class="hi">{i}</span> x <span class="hi">{j}</span> = <span class="hi">{i*j}</span>"</span>)
+    <span class="fc">print</span>()
+
+<span class="cm"># Triangle pattern</span>
+<span class="kw">for</span> row <span class="kw">in</span> <span class="fc">range</span>(<span class="nm">1</span>, <span class="nm">6</span>):
+    <span class="kw">for</span> star <span class="kw">in</span> <span class="fc">range</span>(row):
+        <span class="fc">print</span>(<span class="st">"*"</span>, end<span class="op">=</span><span class="st">""</span>)
+    <span class="fc">print</span>()</pre>
+  </div>
+</div></section>
+
+<!-- 40 ─ Password Validator -->
+<section class="slide"><div class="slide-inner">
+  <div class="eyebrow">Chapter 7 · Loops</div>
+  <h2>Example: <em>Password Validator</em></h2>
+  <div class="win">
+    <div class="tbar"><div class="d r"></div><div class="d y"></div><div class="d g"></div><span class="fn">password_validator.py</span></div>
+    <pre><span class="kw">def</span> <span class="fc">validate</span>(password):
+    has_upper <span class="op">=</span> has_lower <span class="op">=</span> has_digit <span class="op">=</span> <span class="kw">False</span>
+    <span class="kw">for</span> char <span class="kw">in</span> password:
+        <span class="kw">if</span>   char.<span class="fc">isupper</span>(): has_upper <span class="op">=</span> <span class="kw">True</span>
+        <span class="kw">elif</span> char.<span class="fc">islower</span>(): has_lower <span class="op">=</span> <span class="kw">True</span>
+        <span class="kw">elif</span> char.<span class="fc">isdigit</span>(): has_digit <span class="op">=</span> <span class="kw">True</span>
+    <span class="kw">return</span> has_upper <span class="kw">and</span> has_lower <span class="kw">and</span> has_digit <span class="kw">and</span> <span class="fc">len</span>(password) <span class="op">&gt;=</span> <span class="nm">8</span>
+
+<span class="kw">for</span> pwd <span class="kw">in</span> [<span class="st">"Password123"</span>, <span class="st">"password"</span>, <span class="st">"Pass123"</span>]:
+    s <span class="op">=</span> <span class="st">"strong ✓"</span> <span class="kw">if</span> <span class="fc">validate</span>(pwd) <span class="kw">else</span> <span class="st">"weak ✗"</span>
+    <span class="fc">print</span>(<span class="st">f"'{pwd}' → <span class="hi">{s}</span>"</span>)</pre>
+  </div>
+</div></section>
+
+<!-- 41 ─ Advanced Loop Techniques -->
+<section class="slide"><div class="slide-inner">
+  <div class="eyebrow">Chapter 7 · Loops</div>
+  <h2>Advanced Loop <em>Techniques</em></h2>
+  <div class="win">
+    <div class="tbar"><div class="d r"></div><div class="d y"></div><div class="d g"></div><span class="fn">advanced_loops.py</span></div>
+    <pre><span class="cm"># enumerate — index + value</span>
+<span class="kw">for</span> i, fruit <span class="kw">in</span> <span class="fc">enumerate</span>([<span class="st">"apple"</span>, <span class="st">"banana"</span>]):
+    <span class="fc">print</span>(<span class="st">f"<span class="hi">{i+1}</span>. <span class="hi">{fruit}</span>"</span>)
+
+<span class="cm"># zip — loop multiple lists simultaneously</span>
+<span class="kw">for</span> name, age <span class="kw">in</span> <span class="fc">zip</span>(names, ages):
+    <span class="fc">print</span>(<span class="st">f"<span class="hi">{name}</span> is <span class="hi">{age}</span>"</span>)
+
+<span class="cm"># List comprehension</span>
+squares <span class="op">=</span> [x<span class="op">**</span><span class="nm">2</span> <span class="kw">for</span> x <span class="kw">in</span> <span class="fc">range</span>(<span class="nm">1</span>, <span class="nm">6</span>)]        <span class="cm"># [1, 4, 9, 16, 25]</span>
+even_sq <span class="op">=</span> [x<span class="op">**</span><span class="nm">2</span> <span class="kw">for</span> x <span class="kw">in</span> <span class="fc">range</span>(<span class="nm">1</span>, <span class="nm">11</span>) <span class="kw">if</span> x<span class="op">%</span><span class="nm">2</span><span class="op">==</span><span class="nm">0</span>] <span class="cm"># [4,16,36,64,100]</span></pre>
+  </div>
+</div></section>
+
+<!-- 42 ─ Guessing Game -->
+<section class="slide"><div class="slide-inner">
+  <div class="eyebrow">Chapter 7 · Loops</div>
+  <h2>Example: <em>Guessing Game</em></h2>
+  <div class="win">
+    <div class="tbar"><div class="d r"></div><div class="d y"></div><div class="d g"></div><span class="fn">guessing_game.py</span></div>
+    <pre><span class="kw">import</span> random
+
+target <span class="op">=</span> random.<span class="fc">randint</span>(<span class="nm">1</span>, <span class="nm">10</span>)
+guess <span class="op">=</span> <span class="nm">0</span> ; attempts <span class="op">=</span> <span class="nm">0</span>
+
+<span class="kw">while</span> guess <span class="op">!=</span> target <span class="kw">and</span> attempts <span class="op">&lt;</span> <span class="nm">3</span>:
+    guess     <span class="op">=</span> random.<span class="fc">randint</span>(<span class="nm">1</span>, <span class="nm">10</span>)
+    attempts <span class="op">+=</span> <span class="nm">1</span>
+    <span class="kw">if</span>   guess <span class="op">==</span> target: <span class="fc">print</span>(<span class="st">f"Correct in <span class="hi">{attempts}</span>!"</span>)
+    <span class="kw">elif</span> guess <span class="op">&lt;</span>  target: <span class="fc">print</span>(<span class="st">f"<span class="hi">{guess}</span> is too low"</span>)
+    <span class="kw">else</span>:                  <span class="fc">print</span>(<span class="st">f"<span class="hi">{guess}</span> is too high"</span>)
+
+<span class="kw">if</span> guess <span class="op">!=</span> target:
+    <span class="fc">print</span>(<span class="st">f"The number was <span class="hi">{target}</span>"</span>)</pre>
+  </div>
+</div></section>
+
+<!-- 43 ─ Age Classifier -->
+<section class="slide"><div class="slide-inner">
+  <div class="eyebrow">Chapter 7 · Conditionals</div>
+  <h2>Example: <em>Age Classifier</em></h2>
+  <div class="win">
+    <div class="tbar"><div class="d r"></div><div class="d y"></div><div class="d g"></div><span class="fn">age_classifier.py</span></div>
+    <pre>age <span class="op">=</span> <span class="nm">25</span>
+
+<span class="kw">if</span>   age <span class="op">&lt;</span>  <span class="nm">0</span>:  category <span class="op">=</span> <span class="st">"Invalid age"</span>
+<span class="kw">elif</span> age <span class="op">&lt;</span> <span class="nm">13</span>:  category <span class="op">=</span> <span class="st">"Child"</span>
+<span class="kw">elif</span> age <span class="op">&lt;</span> <span class="nm">20</span>:  category <span class="op">=</span> <span class="st">"Teenager"</span>
+<span class="kw">elif</span> age <span class="op">&lt;</span> <span class="nm">60</span>:  category <span class="op">=</span> <span class="st">"Adult"</span>
+<span class="kw">else</span>:           category <span class="op">=</span> <span class="st">"Senior"</span>
+
+<span class="fc">print</span>(<span class="st">f"Age <span class="hi">{age}</span> → <span class="hi">{category}</span>"</span>)</pre>
+  </div>
+</div></section>
+
+<!-- 44 ─ Email Validator -->
+<section class="slide"><div class="slide-inner">
+  <div class="eyebrow">Chapter 7 · Strings</div>
+  <h2>Example: <em>Email Validator</em></h2>
+  <div class="win">
+    <div class="tbar"><div class="d r"></div><div class="d y"></div><div class="d g"></div><span class="fn">email_validator.py</span></div>
+    <pre>email <span class="op">=</span> <span class="st">"user@example.com"</span>
+
+<span class="kw">if</span> <span class="st">"@"</span> <span class="kw">in</span> email <span class="kw">and</span> <span class="st">"."</span> <span class="kw">in</span> email:
+    username <span class="op">=</span> email.<span class="fc">split</span>(<span class="st">"@"</span>)[<span class="nm">0</span>]
+    domain   <span class="op">=</span> email.<span class="fc">split</span>(<span class="st">"@"</span>)[<span class="nm">1</span>]
+    <span class="fc">print</span>(<span class="st">f"Username : <span class="hi">{username}</span>"</span>)
+    <span class="fc">print</span>(<span class="st">f"Domain   : <span class="hi">{domain}</span>"</span>)
+<span class="kw">else</span>:
+    <span class="fc">print</span>(<span class="st">"Invalid email format"</span>)
+
+<span class="cm"># Output:</span>
+<span class="cm"># Username : user</span>
+<span class="cm"># Domain   : example.com</span></pre>
+  </div>
+</div></section>
+
+<!-- 45 ─ Loop Exercises Part 1 -->
+<section class="slide"><div class="slide-inner">
+  <div class="eyebrow">Exercises · Loops — Part 1</div>
+  <h2>Loop <em>Practice</em></h2>
+  <div class="ex"><span class="ex-n">Exercise 01 — Sum Calculator</span><p>Calculate the sum of all numbers from 1 to 100 using a <strong>for loop</strong>, then again using a <strong>while loop</strong>. Verify both results match.</p></div>
+  <div class="ex"><span class="ex-n">Exercise 02 — Pattern Printer</span><p>Print a diamond-like star pattern using nested loops — ascending then descending: <span class="ic">* ** *** **** ***** **** *** ** *</span> (each on its own line).</p></div>
+</div></section>
+
+<!-- 46 ─ Loop Exercises Part 2 -->
+<section class="slide"><div class="slide-inner">
+  <div class="eyebrow">Exercises · Loops — Part 2</div>
+  <h2>Loop <em>Practice</em></h2>
+  <div class="ex"><span class="ex-n">Exercise 03 — Prime Number Finder</span><p>Find all prime numbers between 1 and 50. A prime is only divisible by 1 and itself. Use nested loops to check divisibility for each candidate.</p></div>
+  <div class="ex"><span class="ex-n">Exercise 04 — Word Frequency Counter</span><p>Given <span class="ic">text = "python is great and python is easy to learn python"</span>, count how many times each word appears and print the results.</p></div>
+</div></section>
+
+<!-- 47 ─ Summary -->
+<section class="slide"><div class="slide-inner">
+  <div class="eyebrow">Summary</div>
+  <h2>Key <em>Takeaways</em></h2>
+  <ul class="lst">
+    <li><strong>Variables</strong> — labeled boxes in memory; Python infers types automatically</li>
+    <li><strong>Strings</strong> — text sequences with powerful built-in methods and formatting</li>
+    <li><strong>Conditionals</strong> — if / elif / else for decision-making and flow control</li>
+    <li><strong>For loops</strong> — iterate over known sequences or ranges</li>
+    <li><strong>While loops</strong> — repeat while a condition remains true</li>
+    <li><strong>break / continue</strong> — fine-grained control inside any loop</li>
+  </ul>
+</div></section>
+
+<!-- 48 ─ What's Next -->
+<section class="slide"><div class="slide-inner">
+  <div class="eyebrow">Part 2 Preview</div>
+  <h2>What's Next in <em>Part 2?</em></h2>
+  <ul class="lst">
+    <li><strong>Functions</strong> — build your own reusable code blocks</li>
+    <li><strong>Data Structures</strong> — lists, dictionaries, tuples, sets</li>
+    <li><strong>File Operations</strong> — reading from and writing to files</li>
+    <li><strong>Error Handling</strong> — dealing with problems gracefully</li>
+    <li><strong>Modules &amp; Packages</strong> — using and creating code libraries</li>
+    <li><strong>Object-Oriented Programming</strong> — creating your own data types</li>
+  </ul>
+</div></section>
+
+<!-- 49 ─ Practice Makes Perfect -->
+<section class="slide"><div class="slide-inner">
+  <div class="eyebrow">Advice</div>
+  <h2>Practice Makes <em>Perfect</em></h2>
+  <div class="call call-g"><span class="call-label">Before Part 2</span>Make sure you're comfortable with all four topics. Attempt every exercise — don't worry if you don't get them right immediately. Programming is a skill that improves with practice.</div>
+  <ul class="lst" style="margin-top:16px;">
+    <li>Join Python forums and developer communities</li>
+    <li>Practice on <strong>LeetCode</strong> or <strong>HackerRank</strong></li>
+    <li>Build small projects to apply what you've learned</li>
+  </ul>
+  <div class="call call-b" style="margin-top:12px;">Every expert programmer started exactly where you are now. Keep going.</div>
+</div></section>
+
+<!-- 50 ─ Finish -->
+<section class="slide"><div class="slide-inner" style="align-items:flex-start;">
+  <div class="eyebrow">Part 1 Complete</div>
+  <h1>Go <em>Start Coding</em></h1>
+  <p class="body" style="max-width:540px;">The best way to learn Python is to open a file and experiment. You've covered the entire Part 1 foundation.</p>
+  <button class="restart" onclick="goTo(0)">↺ Restart from Slide 1</button>
+</div></section>
+
+</div><!-- /track -->
+
+<script>
+(function(){
+  const track  = document.getElementById('track');
+  const pf     = document.getElementById('pf');
+  const cnEl   = document.getElementById('cn');
+  const dnEl   = document.getElementById('dn');
+  const slides = Array.from(document.querySelectorAll('.slide'));
+  const N      = slides.length;
+  let c = 0;
+
+  document.getElementById('ct').textContent = N;
+
+  /* Build dot navigator */
+  slides.forEach((_,i)=>{
+    const b = document.createElement('button');
+    b.className='dn'; b.setAttribute('aria-label','Slide '+(i+1));
+    b.addEventListener('click',()=>goTo(i));
+    dnEl.appendChild(b);
+  });
+  const dots = dnEl.querySelectorAll('.dn');
+
+  function goTo(n){
+    slides[c].classList.remove('on');
+    dots[c].classList.remove('on');
+    c = Math.max(0,Math.min(n,N-1));
+    track.style.transform=`translateX(-${c*100}vw)`;
+    pf.style.width=`${((c+1)/N)*100}%`;
+    cnEl.textContent=String(c+1).padStart(2,'0');
+    slides[c].classList.add('on');
+    dots[c].classList.add('on');
+  }
+
+  document.getElementById('prev').onclick=()=>goTo(c-1);
+  document.getElementById('next').onclick=()=>goTo(c+1);
+
+  window.addEventListener('keydown',e=>{
+    if(e.key==='ArrowRight'||e.key===' '){e.preventDefault();goTo(c+1);}
+    if(e.key==='ArrowLeft'){e.preventDefault();goTo(c-1);}
+  });
+
+  let tx=0;
+  document.addEventListener('touchstart',e=>{tx=e.touches[0].clientX;},{passive:true});
+  document.addEventListener('touchend',e=>{
+    const dx=e.changedTouches[0].clientX-tx;
+    if(Math.abs(dx)>48) goTo(c+(dx<0?1:-1));
+  });
+
+  window.goTo=goTo;
+  goTo(0);
+})();
+</script>
+</body>
+</html>

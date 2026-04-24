@@ -1,0 +1,1922 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Python Programming Fundamentals – Part 2</title>
+<link href="https://fonts.googleapis.com/css2?family=Space+Mono:wght@400;700&family=Syne:wght@400;700;800&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --bg: #0d0d12;
+    --surface: #1a1a24;
+    --surface2: #242433;
+    --border: #33334d;
+    --accent: #7fff6e;
+    --text: #ffffff;
+    --muted: #b0b0cc;
+    --code-bg: #1e1e1e;
+    --mac-red: #ff5f57;
+    --mac-yellow: #ffbd2e;
+    --mac-green: #28c840;
+    --purple: #cba6f7;
+    --blue: #89b4fa;
+    --orange: #fab387;
+    --teal: #89dceb;
+    --red: #f38ba8;
+  }
+
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+  body, html { height: 100%; overflow: hidden; background: var(--bg); color: var(--text); font-family: 'Syne', sans-serif; }
+
+  /* ─── CAROUSEL ─── */
+  .carousel-container {
+    height: 100vh;
+    width: 100vw;
+    display: flex;
+    transition: transform 0.6s cubic-bezier(0.23, 1, 0.32, 1);
+    will-change: transform;
+  }
+
+  .slide {
+    min-width: 100vw;
+    height: 100vh;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    padding: 40px 10%;
+    position: relative;
+    border-right: 1px solid var(--border);
+    overflow: hidden;
+  }
+
+  /* Section separator slides */
+  .slide.section-break {
+    background: radial-gradient(ellipse at 60% 40%, rgba(127,255,110,0.06) 0%, transparent 70%);
+  }
+
+  .slide-label {
+    font-family: 'Space Mono', monospace;
+    font-size: 1.05rem;
+    color: var(--accent);
+    text-transform: uppercase;
+    letter-spacing: 6px;
+    margin-bottom: 22px;
+  }
+
+  h2 {
+    font-size: clamp(2.2rem, 5vw, 3.8rem);
+    font-weight: 800;
+    text-align: center;
+    margin-bottom: 28px;
+    line-height: 1.1;
+  }
+
+  h2 span { color: var(--accent); }
+
+  .slide-content {
+    max-width: 1200px;
+    width: 100%;
+    font-size: 1.4rem;
+    color: var(--muted);
+    line-height: 1.65;
+  }
+
+  /* ─── CODE BLOCK ─── */
+  .code-block {
+    background: var(--code-bg);
+    border: 1px solid #3a3a4a;
+    border-radius: 12px;
+    width: 100%;
+    margin: 18px 0;
+    text-align: left;
+    box-shadow: 0 20px 60px rgba(0,0,0,0.7), 0 0 0 1px rgba(255,255,255,0.05);
+    overflow: hidden;
+  }
+
+  .mac-titlebar {
+    background: #2d2d2d;
+    padding: 10px 16px;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    border-bottom: 1px solid #3a3a4a;
+  }
+
+  .mac-dot { width: 13px; height: 13px; border-radius: 50%; flex-shrink: 0; }
+  .mac-dot.red    { background: var(--mac-red); }
+  .mac-dot.yellow { background: var(--mac-yellow); }
+  .mac-dot.green  { background: var(--mac-green); }
+
+  .mac-filename {
+    font-family: 'Space Mono', monospace;
+    font-size: 0.85rem;
+    color: #888;
+    margin-left: auto;
+    margin-right: auto;
+    padding-right: 52px;
+  }
+
+  pre {
+    padding: 22px 28px;
+    font-family: 'Space Mono', monospace;
+    color: #cdd6f4;
+    font-size: 1.05rem;
+    overflow-x: auto;
+    white-space: pre;
+    line-height: 1.75;
+    background: var(--code-bg);
+  }
+
+  /* Syntax tokens */
+  .kw  { color: #cba6f7; }
+  .fn  { color: #89b4fa; }
+  .str { color: #a6e3a1; }
+  .num { color: #fab387; }
+  .cmt { color: #6c7086; font-style: italic; }
+  .var { color: #cdd6f4; }
+  .op  { color: #89dceb; }
+  .acc { color: var(--accent); }
+  .err { color: #f38ba8; }
+  .dec { color: #f5c2e7; }
+
+  /* ─── BOXES ─── */
+  .accent-box {
+    background: rgba(127,255,110,0.07);
+    border-left: 5px solid var(--accent);
+    padding: 20px 28px;
+    border-radius: 8px;
+    margin: 18px 0;
+    color: #fff;
+    font-size: 1.35rem;
+    line-height: 1.6;
+  }
+
+  .warn-box {
+    background: rgba(255,189,46,0.07);
+    border-left: 5px solid var(--mac-yellow);
+    padding: 20px 28px;
+    border-radius: 8px;
+    margin: 18px 0;
+    color: #fff;
+    font-size: 1.3rem;
+    line-height: 1.6;
+  }
+
+  .danger-box {
+    background: rgba(243,139,168,0.07);
+    border-left: 5px solid var(--red);
+    padding: 20px 28px;
+    border-radius: 8px;
+    margin: 18px 0;
+    color: #fff;
+    font-size: 1.3rem;
+    line-height: 1.6;
+  }
+
+  .info-box {
+    background: rgba(137,180,250,0.08);
+    border-left: 5px solid var(--blue);
+    padding: 20px 28px;
+    border-radius: 8px;
+    margin: 18px 0;
+    color: #fff;
+    font-size: 1.3rem;
+    line-height: 1.6;
+  }
+
+  .purple-box {
+    background: rgba(203,166,247,0.07);
+    border-left: 5px solid var(--purple);
+    padding: 20px 28px;
+    border-radius: 8px;
+    margin: 18px 0;
+    color: #fff;
+    font-size: 1.3rem;
+    line-height: 1.6;
+  }
+
+  .exercise-box {
+    background: rgba(137,180,250,0.08);
+    border: 2px dashed var(--blue);
+    padding: 22px 28px;
+    border-radius: 10px;
+    margin: 16px 0;
+    color: #fff;
+    font-size: 1.25rem;
+    line-height: 1.7;
+  }
+
+  .exercise-box .ex-label {
+    font-family: 'Space Mono', monospace;
+    font-size: 0.82rem;
+    color: var(--blue);
+    letter-spacing: 4px;
+    text-transform: uppercase;
+    margin-bottom: 12px;
+    display: block;
+  }
+
+  /* ─── LISTS ─── */
+  ul { list-style: none; text-align: left; width: 100%; }
+
+  li {
+    margin-bottom: 15px;
+    display: flex;
+    gap: 18px;
+    align-items: flex-start;
+    font-size: 1.35rem;
+    color: var(--muted);
+  }
+
+  li::before {
+    content: "→";
+    color: var(--accent);
+    font-weight: bold;
+    flex-shrink: 0;
+  }
+
+  li strong { color: #fff; }
+
+  /* ─── GRID ─── */
+  .grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 24px;
+    width: 100%;
+    align-items: start;
+  }
+
+  .grid-3 {
+    display: grid;
+    grid-template-columns: 1fr 1fr 1fr;
+    gap: 20px;
+    width: 100%;
+    align-items: start;
+  }
+
+  /* ─── TABLE ─── */
+  .table-wrap {
+    width: 100%;
+    margin: 16px 0;
+    border-radius: 10px;
+    overflow: hidden;
+    border: 1px solid var(--border);
+  }
+
+  table { width: 100%; border-collapse: collapse; }
+  th {
+    background: var(--surface2);
+    color: var(--accent);
+    font-family: 'Space Mono', monospace;
+    font-size: 0.95rem;
+    letter-spacing: 3px;
+    padding: 14px 20px;
+    text-align: left;
+    text-transform: uppercase;
+  }
+  td {
+    padding: 12px 20px;
+    font-size: 1.15rem;
+    color: var(--muted);
+    border-top: 1px solid var(--border);
+  }
+  tr:nth-child(even) td { background: rgba(255,255,255,0.03); }
+  td code {
+    font-family: 'Space Mono', monospace;
+    color: var(--accent);
+    background: rgba(127,255,110,0.1);
+    padding: 2px 8px;
+    border-radius: 4px;
+    font-size: 0.95rem;
+  }
+
+  /* ─── TAG CHIPS ─── */
+  .chip {
+    display: inline-block;
+    background: rgba(127,255,110,0.1);
+    border: 1px solid rgba(127,255,110,0.3);
+    color: var(--accent);
+    font-family: 'Space Mono', monospace;
+    font-size: 0.9rem;
+    padding: 4px 14px;
+    border-radius: 100px;
+    margin: 4px;
+  }
+
+  .chip.blue   { background: rgba(137,180,250,0.1); border-color: rgba(137,180,250,0.3); color: var(--blue); }
+  .chip.purple { background: rgba(203,166,247,0.1); border-color: rgba(203,166,247,0.3); color: var(--purple); }
+  .chip.orange { background: rgba(250,179,135,0.1); border-color: rgba(250,179,135,0.3); color: var(--orange); }
+  .chip.red    { background: rgba(243,139,168,0.1); border-color: rgba(243,139,168,0.3); color: var(--red); }
+
+  /* ─── SECTION BREAK HERO ─── */
+  .section-number {
+    font-family: 'Space Mono', monospace;
+    font-size: 8rem;
+    font-weight: 700;
+    color: rgba(127,255,110,0.08);
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    pointer-events: none;
+    user-select: none;
+    letter-spacing: -4px;
+    line-height: 1;
+  }
+
+  .section-icon {
+    font-size: 3.5rem;
+    margin-bottom: 20px;
+    display: block;
+    text-align: center;
+  }
+
+  /* ─── NAV ─── */
+  .nav-controls {
+    position: fixed;
+    bottom: 44px;
+    right: 44px;
+    display: flex;
+    gap: 16px;
+    z-index: 100;
+  }
+
+  .nav-btn {
+    background: var(--surface);
+    border: 2px solid var(--border);
+    color: var(--text);
+    width: 64px;
+    height: 64px;
+    border-radius: 50%;
+    cursor: pointer;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    font-size: 1.6rem;
+    transition: 0.3s;
+    font-family: 'Space Mono', monospace;
+  }
+
+  .nav-btn:hover {
+    border-color: var(--accent);
+    color: var(--accent);
+    transform: translateY(-4px);
+    box-shadow: 0 8px 24px rgba(127,255,110,0.15);
+  }
+
+  .progress-indicator {
+    position: fixed;
+    bottom: 44px;
+    left: 44px;
+    font-family: 'Space Mono', monospace;
+    font-size: 1.1rem;
+    color: var(--muted);
+    z-index: 100;
+  }
+
+  .progress-bar-wrap {
+    position: fixed;
+    bottom: 0;
+    left: 0;
+    width: 100%;
+    height: 3px;
+    background: var(--border);
+    z-index: 200;
+  }
+
+  .progress-bar-fill {
+    height: 100%;
+    background: var(--accent);
+    transition: width 0.5s cubic-bezier(0.23, 1, 0.32, 1);
+  }
+
+  .key-hint {
+    position: fixed;
+    bottom: 56px;
+    left: 50%;
+    transform: translateX(-50%);
+    font-family: 'Space Mono', monospace;
+    font-size: 0.8rem;
+    color: #444;
+    letter-spacing: 2px;
+    z-index: 100;
+  }
+
+  p + p { margin-top: 14px; }
+
+  .big-center {
+    text-align: center;
+    font-size: 1.55rem;
+    color: var(--muted);
+  }
+
+  /* Inline code */
+  .ic {
+    font-family: 'Space Mono', monospace;
+    color: var(--accent);
+    background: rgba(127,255,110,0.1);
+    padding: 2px 10px;
+    border-radius: 4px;
+    font-size: 0.9em;
+  }
+
+  /* Fade in animation for slides */
+  @keyframes fadeSlide {
+    from { opacity: 0; transform: translateY(10px); }
+    to   { opacity: 1; transform: translateY(0); }
+  }
+
+  .slide > * {
+    animation: fadeSlide 0.5s ease both;
+  }
+
+  .slide > *:nth-child(1) { animation-delay: 0.05s; }
+  .slide > *:nth-child(2) { animation-delay: 0.12s; }
+  .slide > *:nth-child(3) { animation-delay: 0.20s; }
+
+  /* Subtle grid background pattern */
+  .slide::before {
+    content: '';
+    position: absolute;
+    inset: 0;
+    background-image: linear-gradient(rgba(127,255,110,0.015) 1px, transparent 1px),
+                      linear-gradient(90deg, rgba(127,255,110,0.015) 1px, transparent 1px);
+    background-size: 60px 60px;
+    pointer-events: none;
+  }
+
+  .slide.section-break::before {
+    background-image: linear-gradient(rgba(127,255,110,0.03) 1px, transparent 1px),
+                      linear-gradient(90deg, rgba(127,255,110,0.03) 1px, transparent 1px);
+  }
+</style>
+</head>
+<body>
+
+<div class="progress-indicator" id="prog-text">Slide 1 / 50</div>
+<div class="key-hint">← → ARROW KEYS OR BUTTONS TO NAVIGATE</div>
+
+<div class="progress-bar-wrap">
+  <div class="progress-bar-fill" id="prog-bar" style="width:2%"></div>
+</div>
+
+<div class="carousel-container" id="carousel">
+
+  <!-- ══════════════════════════════════════════
+       SLIDE 01 – Title
+  ══════════════════════════════════════════ -->
+  <section class="slide section-break">
+    <div class="slide-label">Part 2 · Lesson 01</div>
+    <h2>Python Programming <span>Fundamentals</span></h2>
+    <div class="slide-content big-center">
+      <p>Advanced Core Concepts</p>
+      <p style="margin-top:20px; font-size:1.1rem; color:var(--accent);">
+        Functions &nbsp;·&nbsp; Error Handling &nbsp;·&nbsp; Regular Expressions &nbsp;·&nbsp; File I/O
+      </p>
+      <p style="margin-top:28px; font-size:1rem; color:#555;">
+        Applied to Machine Learning &amp; Cybersecurity
+      </p>
+    </div>
+  </section>
+
+  <!-- ══════════════════════════════════════════
+       SLIDE 02 – Course Overview
+  ══════════════════════════════════════════ -->
+  <section class="slide">
+    <div class="slide-label">Overview</div>
+    <h2>What You Will <span>Learn</span></h2>
+    <div class="slide-content">
+      <ul>
+        <li><strong>Functions</strong> — Write reusable, modular code blocks for ML pipelines and security tools</li>
+        <li><strong>Error Handling</strong> — Catch exceptions gracefully; keep your programs safe and stable</li>
+        <li><strong>Regular Expressions</strong> — Match patterns in text; validate data and detect threats</li>
+        <li><strong>File I/O</strong> — Read and write files; load datasets and analyze logs</li>
+      </ul>
+      <div class="accent-box" style="margin-top:24px;">
+        Every topic includes real-world examples from <strong>Machine Learning</strong> and <strong>Cybersecurity</strong>.
+      </div>
+    </div>
+  </section>
+
+  <!-- ══════════════════════════════════════════
+       SLIDE 03 – SECTION BREAK: Functions
+  ══════════════════════════════════════════ -->
+  <section class="slide section-break">
+    <div class="section-number">01</div>
+    <div class="slide-label">Chapter 1</div>
+    <span class="section-icon">⚙️</span>
+    <h2><span>Functions</span></h2>
+    <div class="slide-content big-center">
+      <p>Write once. Use anywhere. Build powerful tools.</p>
+    </div>
+  </section>
+
+  <!-- ══════════════════════════════════════════
+       SLIDE 04 – What is a Function?
+  ══════════════════════════════════════════ -->
+  <section class="slide">
+    <div class="slide-label">Chapter 1 · Functions</div>
+    <h2>What is a <span>Function?</span></h2>
+    <div class="slide-content">
+      <div class="accent-box">
+        A function is a named, reusable block of code that performs a specific task. Think of it as a <strong>machine</strong> — you put something in, it processes it, and gives you something back.
+      </div>
+      <ul>
+        <li><strong>Modularity</strong> — Break complex programs into smaller, manageable pieces</li>
+        <li><strong>Reusability</strong> — Write code once; call it a thousand times</li>
+        <li><strong>Readability</strong> — Named functions make code self-documenting</li>
+        <li><strong>Testability</strong> — Easier to test small functions than entire programs</li>
+      </ul>
+    </div>
+  </section>
+
+  <!-- ══════════════════════════════════════════
+       SLIDE 05 – Function Anatomy
+  ══════════════════════════════════════════ -->
+  <section class="slide">
+    <div class="slide-label">Chapter 1 · Functions</div>
+    <h2>Anatomy of a <span>Function</span></h2>
+    <div class="slide-content">
+      <div class="code-block">
+        <div class="mac-titlebar">
+          <div class="mac-dot red"></div><div class="mac-dot yellow"></div><div class="mac-dot green"></div>
+          <span class="mac-filename">function_anatomy.py</span>
+        </div>
+        <pre><span class="cmt"># def keyword → name → parameters → colon</span>
+<span class="kw">def</span> <span class="fn">greet</span>(<span class="var">name</span>, <span class="var">language</span><span class="op">=</span><span class="str">"English"</span>):
+    <span class="str">"""Say hello to someone in a chosen language."""</span>  <span class="cmt"># docstring</span>
+    <span class="kw">if</span> language <span class="op">==</span> <span class="str">"French"</span>:
+        <span class="kw">return</span> <span class="str">f"Bonjour, <span class="acc">{name}</span>!"</span>
+    <span class="kw">return</span> <span class="str">f"Hello, <span class="acc">{name}</span>!"</span>
+
+<span class="cmt"># Calling the function</span>
+<span class="fn">print</span>(<span class="fn">greet</span>(<span class="str">"Alice"</span>))             <span class="cmt"># Hello, Alice!</span>
+<span class="fn">print</span>(<span class="fn">greet</span>(<span class="str">"Bob"</span>, <span class="str">"French"</span>))     <span class="cmt"># Bonjour, Bob!</span></pre>
+      </div>
+    </div>
+  </section>
+
+  <!-- ══════════════════════════════════════════
+       SLIDE 06 – Parameters vs Arguments
+  ══════════════════════════════════════════ -->
+  <section class="slide">
+    <div class="slide-label">Chapter 1 · Functions</div>
+    <h2>Parameters vs <span>Arguments</span></h2>
+    <div class="slide-content">
+      <div class="grid">
+        <div class="accent-box">
+          <strong style="color:var(--accent); font-family:'Space Mono',monospace; font-size:0.9rem; letter-spacing:3px; display:block; margin-bottom:10px;">PARAMETER</strong>
+          The <strong>variable</strong> listed in the function definition. It's a placeholder — a name for what will be passed in.<br><br>
+          <span class="ic">def add(a, b)</span> — <em>a</em> and <em>b</em> are parameters.
+        </div>
+        <div class="info-box">
+          <strong style="color:var(--blue); font-family:'Space Mono',monospace; font-size:0.9rem; letter-spacing:3px; display:block; margin-bottom:10px;">ARGUMENT</strong>
+          The <strong>actual value</strong> you pass when calling the function.<br><br>
+          <span class="ic">add(3, 5)</span> — <em>3</em> and <em>5</em> are arguments.
+        </div>
+      </div>
+      <div class="code-block" style="margin-top:10px;">
+        <div class="mac-titlebar">
+          <div class="mac-dot red"></div><div class="mac-dot yellow"></div><div class="mac-dot green"></div>
+          <span class="mac-filename">params_args.py</span>
+        </div>
+        <pre><span class="kw">def</span> <span class="fn">normalize</span>(<span class="var">value</span>, <span class="var">min_val</span>, <span class="var">max_val</span>):   <span class="cmt"># ← parameters</span>
+    <span class="kw">return</span> (value <span class="op">-</span> min_val) <span class="op">/</span> (max_val <span class="op">-</span> min_val)
+
+result <span class="op">=</span> <span class="fn">normalize</span>(<span class="num">75</span>, <span class="num">0</span>, <span class="num">100</span>)              <span class="cmt"># ← arguments</span>
+<span class="fn">print</span>(result)  <span class="cmt"># 0.75</span></pre>
+      </div>
+    </div>
+  </section>
+
+  <!-- ══════════════════════════════════════════
+       SLIDE 07 – Return Values
+  ══════════════════════════════════════════ -->
+  <section class="slide">
+    <div class="slide-label">Chapter 1 · Functions</div>
+    <h2>Return <span>Values</span></h2>
+    <div class="slide-content">
+      <ul>
+        <li>Functions use <strong>return</strong> to send a result back to the caller</li>
+        <li>Without <span class="ic">return</span>, a function returns <span class="ic">None</span> automatically</li>
+        <li>You can return <strong>multiple values</strong> as a tuple</li>
+      </ul>
+      <div class="code-block">
+        <div class="mac-titlebar">
+          <div class="mac-dot red"></div><div class="mac-dot yellow"></div><div class="mac-dot green"></div>
+          <span class="mac-filename">return_values.py</span>
+        </div>
+        <pre><span class="kw">def</span> <span class="fn">stats</span>(<span class="var">data</span>):
+    <span class="str">"""Return mean and standard deviation."""</span>
+    <span class="var">mean</span> <span class="op">=</span> <span class="fn">sum</span>(data) <span class="op">/</span> <span class="fn">len</span>(data)
+    <span class="var">variance</span> <span class="op">=</span> <span class="fn">sum</span>((x <span class="op">-</span> mean) <span class="op">**</span> <span class="num">2</span> <span class="kw">for</span> x <span class="kw">in</span> data) <span class="op">/</span> <span class="fn">len</span>(data)
+    <span class="kw">return</span> mean, variance <span class="op">**</span> <span class="num">0.5</span>   <span class="cmt"># return two values</span>
+
+<span class="var">scores</span> <span class="op">=</span> [<span class="num">85</span>, <span class="num">92</span>, <span class="num">78</span>, <span class="num">95</span>, <span class="num">88</span>]
+<span class="var">avg</span>, <span class="var">std</span> <span class="op">=</span> <span class="fn">stats</span>(scores)
+<span class="fn">print</span>(<span class="str">f"Mean: <span class="acc">{avg:.2f}</span>  Std Dev: <span class="acc">{std:.2f}</span>"</span>)
+<span class="cmt"># Mean: 87.60  Std Dev: 5.94</span></pre>
+      </div>
+    </div>
+  </section>
+
+  <!-- ══════════════════════════════════════════
+       SLIDE 08 – Default & Keyword Arguments
+  ══════════════════════════════════════════ -->
+  <section class="slide">
+    <div class="slide-label">Chapter 1 · Functions</div>
+    <h2>Default &amp; Keyword <span>Arguments</span></h2>
+    <div class="slide-content">
+      <div class="code-block">
+        <div class="mac-titlebar">
+          <div class="mac-dot red"></div><div class="mac-dot yellow"></div><div class="mac-dot green"></div>
+          <span class="mac-filename">keyword_args.py</span>
+        </div>
+        <pre><span class="cmt"># Default argument: used when caller omits it</span>
+<span class="kw">def</span> <span class="fn">train_model</span>(<span class="var">data</span>, <span class="var">epochs</span><span class="op">=</span><span class="num">10</span>, <span class="var">lr</span><span class="op">=</span><span class="num">0.001</span>, <span class="var">verbose</span><span class="op">=</span><span class="kw">True</span>):
+    <span class="fn">print</span>(<span class="str">f"Training for <span class="acc">{epochs}</span> epochs | lr=<span class="acc">{lr}</span>"</span>)
+
+<span class="cmt"># Positional: order matters</span>
+<span class="fn">train_model</span>(dataset, <span class="num">50</span>)
+
+<span class="cmt"># Keyword: order doesn't matter — clearer intent</span>
+<span class="fn">train_model</span>(dataset, <span class="var">verbose</span><span class="op">=</span><span class="kw">False</span>, <span class="var">epochs</span><span class="op">=</span><span class="num">100</span>, <span class="var">lr</span><span class="op">=</span><span class="num">0.0001</span>)</pre>
+      </div>
+      <div class="warn-box">
+        <strong>Rule:</strong> Default parameters must always come <em>after</em> non-default ones. <span class="ic">def f(a=1, b)</span> is a syntax error!
+      </div>
+    </div>
+  </section>
+
+  <!-- ══════════════════════════════════════════
+       SLIDE 09 – *args and **kwargs
+  ══════════════════════════════════════════ -->
+  <section class="slide">
+    <div class="slide-label">Chapter 1 · Functions</div>
+    <h2><span>*args</span> and <span>**kwargs</span></h2>
+    <div class="slide-content">
+      <div class="grid">
+        <div>
+          <div class="accent-box">
+            <strong style="color:var(--accent);">*args</strong><br>
+            Accepts any number of <strong>positional</strong> arguments as a tuple.
+          </div>
+          <div class="code-block">
+            <div class="mac-titlebar"><div class="mac-dot red"></div><div class="mac-dot yellow"></div><div class="mac-dot green"></div><span class="mac-filename">args.py</span></div>
+            <pre><span class="kw">def</span> <span class="fn">total</span>(<span class="op">*</span><span class="var">nums</span>):
+    <span class="kw">return</span> <span class="fn">sum</span>(nums)
+
+<span class="fn">total</span>(<span class="num">1</span>, <span class="num">2</span>, <span class="num">3</span>)     <span class="cmt"># 6</span>
+<span class="fn">total</span>(<span class="num">10</span>, <span class="num">20</span>)      <span class="cmt"># 30</span></pre>
+          </div>
+        </div>
+        <div>
+          <div class="info-box">
+            <strong style="color:var(--blue);">**kwargs</strong><br>
+            Accepts any number of <strong>keyword</strong> arguments as a dict.
+          </div>
+          <div class="code-block">
+            <div class="mac-titlebar"><div class="mac-dot red"></div><div class="mac-dot yellow"></div><div class="mac-dot green"></div><span class="mac-filename">kwargs.py</span></div>
+            <pre><span class="kw">def</span> <span class="fn">config</span>(<span class="op">**</span><span class="var">settings</span>):
+    <span class="kw">for</span> k, v <span class="kw">in</span> settings.<span class="fn">items</span>():
+        <span class="fn">print</span>(<span class="str">f"<span class="acc">{k}</span>=<span class="acc">{v}</span>"</span>)
+
+<span class="fn">config</span>(<span class="var">model</span><span class="op">=</span><span class="str">"rf"</span>, <span class="var">n</span><span class="op">=</span><span class="num">100</span>)</pre>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ══════════════════════════════════════════
+       SLIDE 10 – ML Example: Preprocessing
+  ══════════════════════════════════════════ -->
+  <section class="slide">
+    <div class="slide-label">Chapter 1 · ML Application</div>
+    <h2>ML Example: <span>Data Preprocessing</span></h2>
+    <div class="slide-content">
+      <div class="code-block">
+        <div class="mac-titlebar">
+          <div class="mac-dot red"></div><div class="mac-dot yellow"></div><div class="mac-dot green"></div>
+          <span class="mac-filename">preprocess.py</span>
+        </div>
+        <pre><span class="kw">def</span> <span class="fn">normalize</span>(<span class="var">data</span>):
+    <span class="str">"""Scale values to range [0, 1]."""</span>
+    <span class="var">min_v</span>, <span class="var">max_v</span> <span class="op">=</span> <span class="fn">min</span>(data), <span class="fn">max</span>(data)
+    <span class="kw">return</span> [(x <span class="op">-</span> min_v) <span class="op">/</span> (max_v <span class="op">-</span> min_v) <span class="kw">for</span> x <span class="kw">in</span> data]
+
+<span class="kw">def</span> <span class="fn">remove_outliers</span>(<span class="var">data</span>, <span class="var">threshold</span><span class="op">=</span><span class="num">2.5</span>):
+    <span class="str">"""Drop values more than threshold std devs from mean."""</span>
+    <span class="var">mean</span> <span class="op">=</span> <span class="fn">sum</span>(data) <span class="op">/</span> <span class="fn">len</span>(data)
+    <span class="var">std</span>  <span class="op">=</span> (<span class="fn">sum</span>((x <span class="op">-</span> mean)<span class="op">**</span><span class="num">2</span> <span class="kw">for</span> x <span class="kw">in</span> data) <span class="op">/</span> <span class="fn">len</span>(data))<span class="op">**</span><span class="num">0.5</span>
+    <span class="kw">return</span> [x <span class="kw">for</span> x <span class="kw">in</span> data <span class="kw">if</span> <span class="fn">abs</span>(x <span class="op">-</span> mean) <span class="op">&lt;</span> threshold <span class="op">*</span> std]
+
+<span class="kw">def</span> <span class="fn">preprocess_pipeline</span>(<span class="var">raw_data</span>):
+    <span class="str">"""Run the full data preparation pipeline."""</span>
+    clean  <span class="op">=</span> <span class="fn">remove_outliers</span>(raw_data)
+    scaled <span class="op">=</span> <span class="fn">normalize</span>(clean)
+    <span class="kw">return</span> scaled</pre>
+      </div>
+      <div class="accent-box">
+        Each step is its own function → easy to test, swap, or extend individually.
+      </div>
+    </div>
+  </section>
+
+  <!-- ══════════════════════════════════════════
+       SLIDE 11 – Security Example: Validation
+  ══════════════════════════════════════════ -->
+  <section class="slide">
+    <div class="slide-label">Chapter 1 · Security Application</div>
+    <h2>Security Example: <span>Input Validation</span></h2>
+    <div class="slide-content">
+      <div class="code-block">
+        <div class="mac-titlebar">
+          <div class="mac-dot red"></div><div class="mac-dot yellow"></div><div class="mac-dot green"></div>
+          <span class="mac-filename">input_validator.py</span>
+        </div>
+        <pre><span class="kw">def</span> <span class="fn">sanitize_input</span>(<span class="var">text</span>):
+    <span class="str">"""Strip dangerous characters from user input."""</span>
+    <span class="var">dangerous</span> <span class="op">=</span> [<span class="str">"'"</span>, <span class="str">'"'</span>, <span class="str">";"</span>, <span class="str">"--"</span>, <span class="str">"/*"</span>, <span class="str">"*/"</span>]
+    <span class="kw">for</span> char <span class="kw">in</span> dangerous:
+        text <span class="op">=</span> text.<span class="fn">replace</span>(char, <span class="str">""</span>)
+    <span class="kw">return</span> text.<span class="fn">strip</span>()
+
+<span class="kw">def</span> <span class="fn">validate_password</span>(<span class="var">password</span>):
+    <span class="str">"""Check minimum security requirements."""</span>
+    <span class="kw">return</span> (
+        <span class="fn">len</span>(password) <span class="op">&gt;=</span> <span class="num">8</span> <span class="kw">and</span>
+        <span class="fn">any</span>(c.<span class="fn">isupper</span>() <span class="kw">for</span> c <span class="kw">in</span> password) <span class="kw">and</span>
+        <span class="fn">any</span>(c.<span class="fn">isdigit</span>() <span class="kw">for</span> c <span class="kw">in</span> password)
+    )
+
+<span class="fn">print</span>(<span class="fn">validate_password</span>(<span class="str">"P4ssword"</span>))   <span class="cmt"># True</span>
+<span class="fn">print</span>(<span class="fn">validate_password</span>(<span class="str">"weak"</span>))        <span class="cmt"># False</span></pre>
+      </div>
+    </div>
+  </section>
+
+  <!-- ══════════════════════════════════════════
+       SLIDE 12 – Lambda Functions
+  ══════════════════════════════════════════ -->
+  <section class="slide">
+    <div class="slide-label">Chapter 1 · Functions</div>
+    <h2>Lambda <span>Functions</span></h2>
+    <div class="slide-content">
+      <div class="accent-box">
+        A <strong>lambda</strong> is a small, anonymous function written in a single line. Use them for quick, throwaway transformations.
+      </div>
+      <div class="code-block">
+        <div class="mac-titlebar">
+          <div class="mac-dot red"></div><div class="mac-dot yellow"></div><div class="mac-dot green"></div>
+          <span class="mac-filename">lambdas.py</span>
+        </div>
+        <pre><span class="cmt"># Regular function vs lambda</span>
+<span class="kw">def</span> <span class="fn">square</span>(<span class="var">x</span>): <span class="kw">return</span> x <span class="op">**</span> <span class="num">2</span>
+<span class="var">square</span> <span class="op">=</span> <span class="kw">lambda</span> x: x <span class="op">**</span> <span class="num">2</span>  <span class="cmt"># same thing</span>
+
+<span class="cmt"># Sorting ML model results by accuracy score</span>
+<span class="var">models</span> <span class="op">=</span> [(<span class="str">"SVM"</span>, <span class="num">0.91</span>), (<span class="str">"RF"</span>, <span class="num">0.95</span>), (<span class="str">"KNN"</span>, <span class="num">0.87</span>)]
+<span class="var">models</span>.<span class="fn">sort</span>(<span class="var">key</span><span class="op">=</span><span class="kw">lambda</span> m: m[<span class="num">1</span>], <span class="var">reverse</span><span class="op">=</span><span class="kw">True</span>)
+
+<span class="cmt"># Filter high-risk IPs (security log analysis)</span>
+<span class="var">risk_scores</span> <span class="op">=</span> {<span class="str">"10.0.0.1"</span>: <span class="num">90</span>, <span class="str">"192.168.1.5"</span>: <span class="num">20</span>, <span class="str">"172.16.0.9"</span>: <span class="num">75</span>}
+<span class="var">threats</span> <span class="op">=</span> <span class="fn">filter</span>(<span class="kw">lambda</span> item: item[<span class="num">1</span>] <span class="op">&gt;</span> <span class="num">70</span>, risk_scores.<span class="fn">items</span>())</pre>
+      </div>
+    </div>
+  </section>
+
+  <!-- ══════════════════════════════════════════
+       SLIDE 13 – Functions: Exercises
+  ══════════════════════════════════════════ -->
+  <section class="slide">
+    <div class="slide-label">Chapter 1 · Exercises</div>
+    <h2>Functions <span>Practice</span></h2>
+    <div class="slide-content">
+      <div class="exercise-box">
+        <span class="ex-label">Exercise 1 — Temperature Converter</span>
+        Write a function <span class="ic">celsius_to_fahrenheit(c)</span> that converts Celsius to Fahrenheit.
+        Then write its inverse. Call each to verify: 0°C → 32°F and 100°C → 212°F.
+      </div>
+      <div class="exercise-box">
+        <span class="ex-label">Exercise 2 — ML Feature Scaler</span>
+        Write <span class="ic">min_max_scale(data_list)</span> that scales a list of numbers to [0, 1]. Test with <span class="ic">[10, 20, 30, 40, 50]</span>.
+        Expected output: <span class="ic">[0.0, 0.25, 0.5, 0.75, 1.0]</span>.
+      </div>
+      <div class="exercise-box">
+        <span class="ex-label">Exercise 3 — Password Strength</span>
+        Write <span class="ic">password_strength(pw)</span> that returns <span class="ic">"Weak"</span>, <span class="ic">"Medium"</span>, or <span class="ic">"Strong"</span> based on length and character variety.
+      </div>
+    </div>
+  </section>
+
+  <!-- ══════════════════════════════════════════
+       SLIDE 14 – SECTION BREAK: Error Handling
+  ══════════════════════════════════════════ -->
+  <section class="slide section-break">
+    <div class="section-number">02</div>
+    <div class="slide-label">Chapter 2</div>
+    <span class="section-icon">🛡️</span>
+    <h2><span>Error Handling</span></h2>
+    <div class="slide-content big-center">
+      <p>Things go wrong. Handle them with grace.</p>
+    </div>
+  </section>
+
+  <!-- ══════════════════════════════════════════
+       SLIDE 15 – What is an Exception?
+  ══════════════════════════════════════════ -->
+  <section class="slide">
+    <div class="slide-label">Chapter 2 · Error Handling</div>
+    <h2>What is an <span>Exception?</span></h2>
+    <div class="slide-content">
+      <div class="accent-box">
+        An <strong>exception</strong> is an event that disrupts the normal flow of a program. When Python encounters an error, it "raises" an exception object. If uncaught, it crashes the program.
+      </div>
+      <ul>
+        <li><strong>Syntax errors</strong> — Caught before running; bad code structure</li>
+        <li><strong>Runtime exceptions</strong> — Occur while running; bad operations or data</li>
+        <li><strong>Logic errors</strong> — Program runs but gives wrong results (no exception raised)</li>
+      </ul>
+      <div class="warn-box">
+        Exceptions are <em>not</em> just bugs — they are expected events that need handling. A missing file, bad user input, or a network timeout are all legitimate exceptions.
+      </div>
+    </div>
+  </section>
+
+  <!-- ══════════════════════════════════════════
+       SLIDE 16 – Common Exception Types
+  ══════════════════════════════════════════ -->
+  <section class="slide">
+    <div class="slide-label">Chapter 2 · Error Handling</div>
+    <h2>Common <span>Exception Types</span></h2>
+    <div class="slide-content">
+      <div class="table-wrap">
+        <table>
+          <thead>
+            <tr><th>Exception</th><th>Cause</th><th>Example</th></tr>
+          </thead>
+          <tbody>
+            <tr><td><code>ValueError</code></td><td>Wrong value type or format</td><td><code>int("abc")</code></td></tr>
+            <tr><td><code>TypeError</code></td><td>Wrong data type for operation</td><td><code>"a" + 1</code></td></tr>
+            <tr><td><code>ZeroDivisionError</code></td><td>Division by zero</td><td><code>10 / 0</code></td></tr>
+            <tr><td><code>FileNotFoundError</code></td><td>File doesn't exist</td><td><code>open("x.txt")</code></td></tr>
+            <tr><td><code>KeyError</code></td><td>Dict key not found</td><td><code>d["missing"]</code></td></tr>
+            <tr><td><code>IndexError</code></td><td>List index out of range</td><td><code>lst[99]</code></td></tr>
+            <tr><td><code>PermissionError</code></td><td>No file/system access</td><td>Write to read-only file</td></tr>
+          </tbody>
+        </table>
+      </div>
+    </div>
+  </section>
+
+  <!-- ══════════════════════════════════════════
+       SLIDE 17 – try / except
+  ══════════════════════════════════════════ -->
+  <section class="slide">
+    <div class="slide-label">Chapter 2 · Error Handling</div>
+    <h2>The <span>try / except</span> Block</h2>
+    <div class="slide-content">
+      <div class="code-block">
+        <div class="mac-titlebar">
+          <div class="mac-dot red"></div><div class="mac-dot yellow"></div><div class="mac-dot green"></div>
+          <span class="mac-filename">try_except.py</span>
+        </div>
+        <pre><span class="cmt"># Without error handling — crashes on bad input</span>
+age <span class="op">=</span> <span class="fn">int</span>(<span class="fn">input</span>(<span class="str">"Enter age: "</span>))   <span class="cmt"># ValueError if user types "abc"</span>
+
+<span class="cmt"># With error handling — safe and user-friendly</span>
+<span class="kw">try</span>:
+    age <span class="op">=</span> <span class="fn">int</span>(<span class="fn">input</span>(<span class="str">"Enter age: "</span>))
+    <span class="fn">print</span>(<span class="str">f"You are <span class="acc">{age}</span> years old"</span>)
+
+<span class="kw">except</span> <span class="err">ValueError</span>:
+    <span class="fn">print</span>(<span class="str">"Please enter a valid number!"</span>)
+
+<span class="cmt"># Catching multiple exception types</span>
+<span class="kw">except</span> (<span class="err">TypeError</span>, <span class="err">OverflowError</span>) <span class="kw">as</span> e:
+    <span class="fn">print</span>(<span class="str">f"Unexpected error: <span class="acc">{e}</span>"</span>)</pre>
+      </div>
+    </div>
+  </section>
+
+  <!-- ══════════════════════════════════════════
+       SLIDE 18 – else / finally
+  ══════════════════════════════════════════ -->
+  <section class="slide">
+    <div class="slide-label">Chapter 2 · Error Handling</div>
+    <h2>else &amp; <span>finally</span></h2>
+    <div class="slide-content">
+      <div class="code-block">
+        <div class="mac-titlebar">
+          <div class="mac-dot red"></div><div class="mac-dot yellow"></div><div class="mac-dot green"></div>
+          <span class="mac-filename">else_finally.py</span>
+        </div>
+        <pre><span class="kw">try</span>:
+    <span class="var">file</span> <span class="op">=</span> <span class="fn">open</span>(<span class="str">"data.csv"</span>, <span class="str">"r"</span>)
+    <span class="var">content</span> <span class="op">=</span> file.<span class="fn">read</span>()
+
+<span class="kw">except</span> <span class="err">FileNotFoundError</span>:
+    <span class="fn">print</span>(<span class="str">"File not found — check the path"</span>)
+
+<span class="kw">else</span>:
+    <span class="cmt"># Runs ONLY if no exception occurred</span>
+    <span class="fn">print</span>(<span class="str">f"Loaded <span class="acc">{len(content)}</span> characters"</span>)
+
+<span class="kw">finally</span>:
+    <span class="cmt"># ALWAYS runs — perfect for cleanup</span>
+    file.<span class="fn">close</span>()
+    <span class="fn">print</span>(<span class="str">"File closed."</span>)</pre>
+      </div>
+      <div class="accent-box">
+        <strong>finally</strong> is your cleanup crew — it runs whether or not an exception occurred. Always use it to close files, release connections, or free resources.
+      </div>
+    </div>
+  </section>
+
+  <!-- ══════════════════════════════════════════
+       SLIDE 19 – Raising Exceptions
+  ══════════════════════════════════════════ -->
+  <section class="slide">
+    <div class="slide-label">Chapter 2 · Error Handling</div>
+    <h2>Raising <span>Exceptions</span></h2>
+    <div class="slide-content">
+      <div class="info-box">
+        You can <strong>raise</strong> your own exceptions to enforce rules in your code — this is especially important in security-critical systems.
+      </div>
+      <div class="code-block">
+        <div class="mac-titlebar">
+          <div class="mac-dot red"></div><div class="mac-dot yellow"></div><div class="mac-dot green"></div>
+          <span class="mac-filename">raise_exception.py</span>
+        </div>
+        <pre><span class="kw">def</span> <span class="fn">set_learning_rate</span>(<span class="var">lr</span>):
+    <span class="kw">if</span> <span class="kw">not</span> (<span class="num">0</span> <span class="op">&lt;</span> lr <span class="op">&lt;</span> <span class="num">1</span>):
+        <span class="kw">raise</span> <span class="err">ValueError</span>(<span class="str">f"Learning rate must be in (0,1). Got: <span class="acc">{lr}</span>"</span>)
+    <span class="kw">return</span> lr
+
+<span class="kw">def</span> <span class="fn">authenticate</span>(<span class="var">user</span>, <span class="var">token</span>):
+    <span class="kw">if</span> <span class="kw">not</span> token:
+        <span class="kw">raise</span> <span class="err">PermissionError</span>(<span class="str">"Access denied: no token provided"</span>)
+    <span class="cmt"># continue authentication...</span>
+
+<span class="kw">try</span>:
+    <span class="fn">set_learning_rate</span>(<span class="num">1.5</span>)
+<span class="kw">except</span> <span class="err">ValueError</span> <span class="kw">as</span> e:
+    <span class="fn">print</span>(<span class="str">f"Config error: <span class="acc">{e}</span>"</span>)</pre>
+      </div>
+    </div>
+  </section>
+
+  <!-- ══════════════════════════════════════════
+       SLIDE 20 – Custom Exceptions
+  ══════════════════════════════════════════ -->
+  <section class="slide">
+    <div class="slide-label">Chapter 2 · Error Handling</div>
+    <h2>Custom <span>Exception Classes</span></h2>
+    <div class="slide-content">
+      <div class="code-block">
+        <div class="mac-titlebar">
+          <div class="mac-dot red"></div><div class="mac-dot yellow"></div><div class="mac-dot green"></div>
+          <span class="mac-filename">custom_exceptions.py</span>
+        </div>
+        <pre><span class="cmt"># Create domain-specific exceptions by inheriting Exception</span>
+<span class="kw">class</span> <span class="fn">ModelNotTrainedError</span>(<span class="err">Exception</span>):
+    <span class="str">"""Raised when predicting with an untrained model."""</span>
+    <span class="kw">pass</span>
+
+<span class="kw">class</span> <span class="fn">SuspiciousActivityError</span>(<span class="err">Exception</span>):
+    <span class="str">"""Raised when anomalous login behavior is detected."""</span>
+    <span class="kw">def</span> <span class="fn">__init__</span>(<span class="var">self</span>, <span class="var">ip</span>, <span class="var">reason</span>):
+        <span class="fn">super</span>().<span class="fn">__init__</span>(<span class="str">f"Threat from <span class="acc">{ip}</span>: <span class="acc">{reason}</span>"</span>)
+
+<span class="cmt"># Usage</span>
+<span class="kw">raise</span> <span class="fn">SuspiciousActivityError</span>(<span class="str">"192.168.1.100"</span>, <span class="str">"brute force detected"</span>)
+<span class="cmt"># SuspiciousActivityError: Threat from 192.168.1.100: brute force detected</span></pre>
+      </div>
+      <div class="purple-box">
+        Custom exceptions make your codebase self-documenting and allow callers to handle specific failure cases precisely.
+      </div>
+    </div>
+  </section>
+
+  <!-- ══════════════════════════════════════════
+       SLIDE 21 – Security: Safe Execution
+  ══════════════════════════════════════════ -->
+  <section class="slide">
+    <div class="slide-label">Chapter 2 · Security Application</div>
+    <h2>Security: <span>Safe Execution</span></h2>
+    <div class="slide-content">
+      <div class="code-block">
+        <div class="mac-titlebar">
+          <div class="mac-dot red"></div><div class="mac-dot yellow"></div><div class="mac-dot green"></div>
+          <span class="mac-filename">safe_login.py</span>
+        </div>
+        <pre><span class="kw">import</span> logging
+
+<span class="fn">logging</span>.<span class="fn">basicConfig</span>(<span class="var">filename</span><span class="op">=</span><span class="str">"auth.log"</span>, <span class="var">level</span><span class="op">=</span>logging.INFO)
+
+<span class="kw">def</span> <span class="fn">login</span>(<span class="var">username</span>, <span class="var">password</span>):
+    <span class="kw">try</span>:
+        user <span class="op">=</span> <span class="fn">fetch_user</span>(username)          <span class="cmt"># may raise KeyError</span>
+        <span class="fn">verify_password</span>(user, password)      <span class="cmt"># may raise PermissionError</span>
+        logging.<span class="fn">info</span>(<span class="str">f"Login OK: <span class="acc">{username}</span>"</span>)
+        <span class="kw">return</span> <span class="kw">True</span>
+
+    <span class="kw">except</span> <span class="err">KeyError</span>:
+        logging.<span class="fn">warning</span>(<span class="str">f"Unknown user: <span class="acc">{username}</span>"</span>)
+        <span class="kw">return</span> <span class="kw">False</span>               <span class="cmt"># don't reveal "user not found"</span>
+
+    <span class="kw">except</span> <span class="err">PermissionError</span>:
+        logging.<span class="fn">warning</span>(<span class="str">f"Bad password: <span class="acc">{username}</span>"</span>)
+        <span class="kw">return</span> <span class="kw">False</span>               <span class="cmt"># same message → prevents enumeration</span>
+
+    <span class="kw">except</span> <span class="err">Exception</span> <span class="kw">as</span> e:
+        logging.<span class="fn">error</span>(<span class="str">f"Unexpected: <span class="acc">{e}</span>"</span>)
+        <span class="kw">return</span> <span class="kw">False</span></pre>
+      </div>
+    </div>
+  </section>
+
+  <!-- ══════════════════════════════════════════
+       SLIDE 22 – ML: Robust Inference
+  ══════════════════════════════════════════ -->
+  <section class="slide">
+    <div class="slide-label">Chapter 2 · ML Application</div>
+    <h2>ML Example: <span>Robust Inference</span></h2>
+    <div class="slide-content">
+      <div class="code-block">
+        <div class="mac-titlebar">
+          <div class="mac-dot red"></div><div class="mac-dot yellow"></div><div class="mac-dot green"></div>
+          <span class="mac-filename">robust_predict.py</span>
+        </div>
+        <pre><span class="kw">def</span> <span class="fn">safe_predict</span>(<span class="var">model</span>, <span class="var">features</span>):
+    <span class="str">"""Run inference with comprehensive error handling."""</span>
+    <span class="kw">try</span>:
+        <span class="kw">if</span> <span class="kw">not</span> features:
+            <span class="kw">raise</span> <span class="err">ValueError</span>(<span class="str">"Feature vector is empty"</span>)
+
+        <span class="var">result</span> <span class="op">=</span> model.<span class="fn">predict</span>([features])
+        <span class="kw">return</span> {<span class="str">"status"</span>: <span class="str">"ok"</span>, <span class="str">"prediction"</span>: result[<span class="num">0</span>]}
+
+    <span class="kw">except</span> <span class="err">ValueError</span> <span class="kw">as</span> e:
+        <span class="kw">return</span> {<span class="str">"status"</span>: <span class="str">"error"</span>, <span class="str">"message"</span>: <span class="fn">str</span>(e)}
+
+    <span class="kw">except</span> <span class="err">AttributeError</span>:
+        <span class="kw">return</span> {<span class="str">"status"</span>: <span class="str">"error"</span>, <span class="str">"message"</span>: <span class="str">"Model not trained yet"</span>}
+
+    <span class="kw">except</span> <span class="err">Exception</span> <span class="kw">as</span> e:
+        <span class="kw">return</span> {<span class="str">"status"</span>: <span class="str">"error"</span>, <span class="str">"message"</span>: <span class="str">f"Prediction failed: <span class="acc">{e}</span>"</span>}</pre>
+      </div>
+      <div class="accent-box">
+        Production ML systems must never crash silently. Always return structured error responses — especially in APIs.
+      </div>
+    </div>
+  </section>
+
+  <!-- ══════════════════════════════════════════
+       SLIDE 23 – Error Handling: Exercises
+  ══════════════════════════════════════════ -->
+  <section class="slide">
+    <div class="slide-label">Chapter 2 · Exercises</div>
+    <h2>Error Handling <span>Practice</span></h2>
+    <div class="slide-content">
+      <div class="exercise-box">
+        <span class="ex-label">Exercise 1 — Safe Division</span>
+        Write <span class="ic">safe_divide(a, b)</span> that handles <span class="ic">ZeroDivisionError</span> and <span class="ic">TypeError</span> gracefully. Return <span class="ic">None</span> on failure and print a helpful message.
+      </div>
+      <div class="exercise-box">
+        <span class="ex-label">Exercise 2 — Config Loader</span>
+        Write a function that reads a config file. Handle: file not found, permission denied, and malformed content. Log each error with a different severity level.
+      </div>
+      <div class="exercise-box">
+        <span class="ex-label">Exercise 3 — Brute Force Detector</span>
+        Simulate a login system. Raise a custom <span class="ic">BruteForceError</span> if the same username fails more than 3 times. Reset the counter on success.
+      </div>
+    </div>
+  </section>
+
+  <!-- ══════════════════════════════════════════
+       SLIDE 24 – SECTION BREAK: Regex
+  ══════════════════════════════════════════ -->
+  <section class="slide section-break">
+    <div class="section-number">03</div>
+    <div class="slide-label">Chapter 3</div>
+    <span class="section-icon">🔍</span>
+    <h2>Regular <span>Expressions</span></h2>
+    <div class="slide-content big-center">
+      <p>Find patterns in text. Validate data. Detect threats.</p>
+    </div>
+  </section>
+
+  <!-- ══════════════════════════════════════════
+       SLIDE 25 – What is Regex?
+  ══════════════════════════════════════════ -->
+  <section class="slide">
+    <div class="slide-label">Chapter 3 · Regular Expressions</div>
+    <h2>What is a <span>Regular Expression?</span></h2>
+    <div class="slide-content">
+      <div class="accent-box">
+        A <strong>regular expression (regex)</strong> is a sequence of characters that defines a search pattern. It lets you find, match, and transform text with surgical precision.
+      </div>
+      <ul>
+        <li><strong>Validate</strong> — Is this a valid email? Phone number? IP address?</li>
+        <li><strong>Extract</strong> — Pull all URLs from a webpage; extract dates from logs</li>
+        <li><strong>Replace</strong> — Redact sensitive data; sanitize user input</li>
+        <li><strong>Split</strong> — Break text on complex delimiters</li>
+      </ul>
+      <div class="warn-box">
+        Regex is <em>not</em> a programming language — it is a pattern description language. Python's <span class="ic">re</span> module is used to execute patterns against strings.
+      </div>
+    </div>
+  </section>
+
+  <!-- ══════════════════════════════════════════
+       SLIDE 26 – Core Regex Syntax
+  ══════════════════════════════════════════ -->
+  <section class="slide">
+    <div class="slide-label">Chapter 3 · Regular Expressions</div>
+    <h2>Core Regex <span>Syntax</span></h2>
+    <div class="slide-content">
+      <div class="table-wrap">
+        <table>
+          <thead>
+            <tr><th>Pattern</th><th>Meaning</th><th>Example Match</th></tr>
+          </thead>
+          <tbody>
+            <tr><td><code>.</code></td><td>Any single character</td><td><code>a.c</code> → "abc", "a1c"</td></tr>
+            <tr><td><code>\d</code></td><td>Any digit (0–9)</td><td><code>\d\d\d</code> → "123"</td></tr>
+            <tr><td><code>\w</code></td><td>Word char (a–z, A–Z, 0–9, _)</td><td><code>\w+</code> → "hello_123"</td></tr>
+            <tr><td><code>\s</code></td><td>Whitespace</td><td><code>a\sb</code> → "a b"</td></tr>
+            <tr><td><code>^</code></td><td>Start of string</td><td><code>^Hello</code></td></tr>
+            <tr><td><code>$</code></td><td>End of string</td><td><code>end$</code></td></tr>
+            <tr><td><code>*</code></td><td>0 or more</td><td><code>ab*</code> → "a", "ab", "abbb"</td></tr>
+            <tr><td><code>+</code></td><td>1 or more</td><td><code>ab+</code> → "ab", "abbb"</td></tr>
+            <tr><td><code>?</code></td><td>0 or 1 (optional)</td><td><code>colou?r</code> → "color"/"colour"</td></tr>
+            <tr><td><code>{n,m}</code></td><td>Between n and m times</td><td><code>\d{3,5}</code> → "123", "12345"</td></tr>
+          </tbody>
+        </table>
+      </div>
+    </div>
+  </section>
+
+  <!-- ══════════════════════════════════════════
+       SLIDE 27 – Python re Module
+  ══════════════════════════════════════════ -->
+  <section class="slide">
+    <div class="slide-label">Chapter 3 · Regular Expressions</div>
+    <h2>The Python <span>re Module</span></h2>
+    <div class="slide-content">
+      <div class="code-block">
+        <div class="mac-titlebar">
+          <div class="mac-dot red"></div><div class="mac-dot yellow"></div><div class="mac-dot green"></div>
+          <span class="mac-filename">re_basics.py</span>
+        </div>
+        <pre><span class="kw">import</span> re
+
+<span class="var">text</span> <span class="op">=</span> <span class="str">"Server started on 2024-03-15 at port 8080"</span>
+
+<span class="cmt"># re.search() — find first match anywhere in string</span>
+<span class="var">m</span> <span class="op">=</span> re.<span class="fn">search</span>(<span class="str">r"\d{4}-\d{2}-\d{2}"</span>, text)
+<span class="fn">print</span>(m.<span class="fn">group</span>())   <span class="cmt"># 2024-03-15</span>
+
+<span class="cmt"># re.findall() — return all matches as a list</span>
+<span class="var">numbers</span> <span class="op">=</span> re.<span class="fn">findall</span>(<span class="str">r"\d+"</span>, text)
+<span class="fn">print</span>(numbers)     <span class="cmt"># ['2024', '03', '15', '8080']</span>
+
+<span class="cmt"># re.sub() — replace matches</span>
+<span class="var">redacted</span> <span class="op">=</span> re.<span class="fn">sub</span>(<span class="str">r"\d{4}-\d{2}-\d{2}"</span>, <span class="str">"[DATE]"</span>, text)
+<span class="fn">print</span>(redacted)    <span class="cmt"># Server started on [DATE] at port 8080</span>
+
+<span class="cmt"># re.match() — match at START of string only</span>
+<span class="var">m2</span> <span class="op">=</span> re.<span class="fn">match</span>(<span class="str">r"Server"</span>, text)   <span class="cmt"># matches!</span></pre>
+      </div>
+    </div>
+  </section>
+
+  <!-- ══════════════════════════════════════════
+       SLIDE 28 – Groups & Capture
+  ══════════════════════════════════════════ -->
+  <section class="slide">
+    <div class="slide-label">Chapter 3 · Regular Expressions</div>
+    <h2>Groups &amp; <span>Capture</span></h2>
+    <div class="slide-content">
+      <div class="code-block">
+        <div class="mac-titlebar">
+          <div class="mac-dot red"></div><div class="mac-dot yellow"></div><div class="mac-dot green"></div>
+          <span class="mac-filename">groups.py</span>
+        </div>
+        <pre><span class="kw">import</span> re
+
+<span class="cmt"># Parentheses create capture groups</span>
+<span class="var">log</span> <span class="op">=</span> <span class="str">"2024-03-15 10:45:22 ERROR 192.168.1.42 Login failed"</span>
+
+<span class="var">pattern</span> <span class="op">=</span> <span class="str">r"(\d{4}-\d{2}-\d{2}) (\d{2}:\d{2}:\d{2}) (\w+) ([\d.]+)"</span>
+<span class="var">m</span> <span class="op">=</span> re.<span class="fn">search</span>(pattern, log)
+
+<span class="fn">print</span>(m.<span class="fn">group</span>(<span class="num">1</span>))   <span class="cmt"># 2024-03-15  (date)</span>
+<span class="fn">print</span>(m.<span class="fn">group</span>(<span class="num">2</span>))   <span class="cmt"># 10:45:22   (time)</span>
+<span class="fn">print</span>(m.<span class="fn">group</span>(<span class="num">3</span>))   <span class="cmt"># ERROR      (level)</span>
+<span class="fn">print</span>(m.<span class="fn">group</span>(<span class="num">4</span>))   <span class="cmt"># 192.168.1.42 (IP)</span>
+
+<span class="cmt"># Named groups — even cleaner</span>
+<span class="var">p2</span> <span class="op">=</span> <span class="str">r"(?P&lt;level&gt;\w+) (?P&lt;ip&gt;[\d.]+)"</span>
+<span class="var">m2</span> <span class="op">=</span> re.<span class="fn">search</span>(p2, log)
+<span class="fn">print</span>(m2.<span class="fn">group</span>(<span class="str">"level"</span>))  <span class="cmt"># ERROR</span></pre>
+      </div>
+    </div>
+  </section>
+
+  <!-- ══════════════════════════════════════════
+       SLIDE 29 – Email Validation
+  ══════════════════════════════════════════ -->
+  <section class="slide">
+    <div class="slide-label">Chapter 3 · ML &amp; Security Application</div>
+    <h2>Example: <span>Email Validation</span></h2>
+    <div class="slide-content">
+      <div class="code-block">
+        <div class="mac-titlebar">
+          <div class="mac-dot red"></div><div class="mac-dot yellow"></div><div class="mac-dot green"></div>
+          <span class="mac-filename">email_regex.py</span>
+        </div>
+        <pre><span class="kw">import</span> re
+
+<span class="kw">def</span> <span class="fn">is_valid_email</span>(<span class="var">email</span>):
+    <span class="str">"""Validate email format using regex."""</span>
+    <span class="var">pattern</span> <span class="op">=</span> <span class="str">r"^[a-zA-Z0-9._%+\-]+@[a-zA-Z0-9.\-]+\.[a-zA-Z]{2,}$"</span>
+    <span class="kw">return</span> <span class="fn">bool</span>(re.<span class="fn">match</span>(pattern, email))
+
+<span class="cmt"># Testing</span>
+<span class="var">emails</span> <span class="op">=</span> [
+    <span class="str">"alice@university.edu"</span>,    <span class="cmt"># ✓ valid</span>
+    <span class="str">"user@domain.co.uk"</span>,       <span class="cmt"># ✓ valid</span>
+    <span class="str">"not-an-email"</span>,            <span class="cmt"># ✗ no @ sign</span>
+    <span class="str">"user@"</span>,                   <span class="cmt"># ✗ no domain</span>
+    <span class="str">"user @domain.com"</span>,        <span class="cmt"># ✗ space in name</span>
+]
+
+<span class="kw">for</span> e <span class="kw">in</span> emails:
+    status <span class="op">=</span> <span class="str">"✓"</span> <span class="kw">if</span> <span class="fn">is_valid_email</span>(e) <span class="kw">else</span> <span class="str">"✗"</span>
+    <span class="fn">print</span>(<span class="str">f"<span class="acc">{status}</span> <span class="acc">{e}</span>"</span>)</pre>
+      </div>
+    </div>
+  </section>
+
+  <!-- ══════════════════════════════════════════
+       SLIDE 30 – Log Parsing
+  ══════════════════════════════════════════ -->
+  <section class="slide">
+    <div class="slide-label">Chapter 3 · Security Application</div>
+    <h2>Security: <span>Log Parsing</span></h2>
+    <div class="slide-content">
+      <div class="code-block">
+        <div class="mac-titlebar">
+          <div class="mac-dot red"></div><div class="mac-dot yellow"></div><div class="mac-dot green"></div>
+          <span class="mac-filename">log_parser.py</span>
+        </div>
+        <pre><span class="kw">import</span> re
+
+<span class="var">logs</span> <span class="op">=</span> [
+    <span class="str">"2024-03-15 09:00:01 INFO  10.0.0.5 GET /api/data 200"</span>,
+    <span class="str">"2024-03-15 09:01:33 ERROR 192.168.1.99 POST /admin 403"</span>,
+    <span class="str">"2024-03-15 09:02:10 WARN  172.16.0.1 GET /login 401"</span>,
+]
+
+<span class="var">pattern</span> <span class="op">=</span> <span class="str">r"(?P&lt;date&gt;\S+) (?P&lt;time&gt;\S+) (?P&lt;level&gt;\w+)\s+(?P&lt;ip&gt;[\d.]+)"</span>
+
+<span class="kw">for</span> log <span class="kw">in</span> logs:
+    <span class="var">m</span> <span class="op">=</span> re.<span class="fn">search</span>(pattern, log)
+    <span class="kw">if</span> m <span class="kw">and</span> m.<span class="fn">group</span>(<span class="str">"level"</span>) <span class="kw">in</span> (<span class="str">"ERROR"</span>, <span class="str">"WARN"</span>):
+        <span class="fn">print</span>(<span class="str">f"[ALERT] <span class="acc">{m.group('level')}</span> from <span class="acc">{m.group('ip')}</span>"</span>)
+
+<span class="cmt"># [ALERT] ERROR from 192.168.1.99</span>
+<span class="cmt"># [ALERT] WARN  from 172.16.0.1</span></pre>
+      </div>
+    </div>
+  </section>
+
+  <!-- ══════════════════════════════════════════
+       SLIDE 31 – Detecting Suspicious Patterns
+  ══════════════════════════════════════════ -->
+  <section class="slide">
+    <div class="slide-label">Chapter 3 · Cybersecurity Application</div>
+    <h2>Detect <span>Suspicious Patterns</span></h2>
+    <div class="slide-content">
+      <div class="code-block">
+        <div class="mac-titlebar">
+          <div class="mac-dot red"></div><div class="mac-dot yellow"></div><div class="mac-dot green"></div>
+          <span class="mac-filename">threat_detect.py</span>
+        </div>
+        <pre><span class="kw">import</span> re
+
+<span class="cmt"># Pattern dictionary — extendable threat library</span>
+<span class="var">THREATS</span> <span class="op">=</span> {
+    <span class="str">"SQL Injection"</span>:    <span class="str">r"('|\s)(OR|AND|UNION|SELECT|DROP)\s"</span>,
+    <span class="str">"XSS Attack"</span>:       <span class="str">r"&lt;script[\s\S]*?&gt;"</span>,
+    <span class="str">"Path Traversal"</span>:   <span class="str">r"\.\./|\.\.\\",</span>
+    <span class="str">"IPv4 Address"</span>:     <span class="str">r"\b\d{1,3}\.\d{1,3}\.\d{1,3}\.\d{1,3}\b"</span>,
+}
+
+<span class="kw">def</span> <span class="fn">scan</span>(<span class="var">input_text</span>):
+    <span class="kw">for</span> name, pattern <span class="kw">in</span> THREATS.<span class="fn">items</span>():
+        <span class="kw">if</span> re.<span class="fn">search</span>(pattern, input_text, re.IGNORECASE):
+            <span class="fn">print</span>(<span class="str">f"⚠ THREAT DETECTED: <span class="acc">{name}</span>"</span>)
+            <span class="kw">return</span> <span class="kw">False</span>
+    <span class="kw">return</span> <span class="kw">True</span>  <span class="cmt"># input is clean</span>
+
+<span class="fn">scan</span>(<span class="str">"' OR 1=1 --"</span>)       <span class="cmt"># ⚠ THREAT: SQL Injection</span></pre>
+      </div>
+    </div>
+  </section>
+
+  <!-- ══════════════════════════════════════════
+       SLIDE 32 – Regex: ML Application
+  ══════════════════════════════════════════ -->
+  <section class="slide">
+    <div class="slide-label">Chapter 3 · ML Application</div>
+    <h2>ML Example: <span>Text Cleaning</span></h2>
+    <div class="slide-content">
+      <div class="code-block">
+        <div class="mac-titlebar">
+          <div class="mac-dot red"></div><div class="mac-dot yellow"></div><div class="mac-dot green"></div>
+          <span class="mac-filename">text_clean.py</span>
+        </div>
+        <pre><span class="kw">import</span> re
+
+<span class="kw">def</span> <span class="fn">clean_text</span>(<span class="var">text</span>):
+    <span class="str">"""Prepare raw text for NLP / ML pipeline."""</span>
+    <span class="cmt"># Remove URLs</span>
+    text <span class="op">=</span> re.<span class="fn">sub</span>(<span class="str">r"https?://\S+"</span>, <span class="str">""</span>, text)
+    <span class="cmt"># Remove HTML tags</span>
+    text <span class="op">=</span> re.<span class="fn">sub</span>(<span class="str">r"&lt;[^&gt;]+&gt;"</span>, <span class="str">""</span>, text)
+    <span class="cmt"># Remove special characters (keep letters/numbers/spaces)</span>
+    text <span class="op">=</span> re.<span class="fn">sub</span>(<span class="str">r"[^a-zA-Z0-9\s]"</span>, <span class="str">""</span>, text)
+    <span class="cmt"># Collapse multiple spaces</span>
+    text <span class="op">=</span> re.<span class="fn">sub</span>(<span class="str">r"\s+"</span>, <span class="str">" "</span>, text)
+    <span class="kw">return</span> text.<span class="fn">strip</span>().<span class="fn">lower</span>()
+
+<span class="var">raw</span> <span class="op">=</span> <span class="str">"Check &lt;b&gt;this&lt;/b&gt; out: https://example.com  Great!!! #AI"</span>
+<span class="fn">print</span>(<span class="fn">clean_text</span>(raw))
+<span class="cmt"># check this out  great ai</span></pre>
+      </div>
+      <div class="accent-box">
+        Text cleaning with regex is the <strong>first step</strong> in almost every NLP pipeline — sentiment analysis, spam detection, and topic modelling all depend on clean input.
+      </div>
+    </div>
+  </section>
+
+  <!-- ══════════════════════════════════════════
+       SLIDE 33 – Compiled Patterns & Flags
+  ══════════════════════════════════════════ -->
+  <section class="slide">
+    <div class="slide-label">Chapter 3 · Regular Expressions</div>
+    <h2>Compiled Patterns <span>&amp; Flags</span></h2>
+    <div class="slide-content">
+      <div class="code-block">
+        <div class="mac-titlebar">
+          <div class="mac-dot red"></div><div class="mac-dot yellow"></div><div class="mac-dot green"></div>
+          <span class="mac-filename">compiled_regex.py</span>
+        </div>
+        <pre><span class="kw">import</span> re
+
+<span class="cmt"># Compile once, use many times (faster in loops)</span>
+<span class="var">ip_pattern</span> <span class="op">=</span> re.<span class="fn">compile</span>(<span class="str">r"\b(\d{1,3}\.){3}\d{1,3}\b"</span>)
+
+<span class="cmt"># Common flags</span>
+re.<span class="fn">search</span>(<span class="str">r"error"</span>, text, re.IGNORECASE)   <span class="cmt"># case-insensitive</span>
+re.<span class="fn">search</span>(<span class="str">r"^line"</span>, text, re.MULTILINE)    <span class="cmt"># ^ matches each line</span>
+re.<span class="fn">search</span>(<span class="str">r"."</span>,    text, re.DOTALL)        <span class="cmt"># . matches newlines too</span>
+
+<span class="cmt"># Verbose mode — write readable patterns</span>
+<span class="var">date_pat</span> <span class="op">=</span> re.<span class="fn">compile</span>(<span class="str">r"""
+    (\d{4})   # year
+    -
+    (\d{2})   # month
+    -
+    (\d{2})   # day
+"""</span>, re.VERBOSE)</pre>
+      </div>
+    </div>
+  </section>
+
+  <!-- ══════════════════════════════════════════
+       SLIDE 34 – Regex Exercises
+  ══════════════════════════════════════════ -->
+  <section class="slide">
+    <div class="slide-label">Chapter 3 · Exercises</div>
+    <h2>Regex <span>Practice</span></h2>
+    <div class="slide-content">
+      <div class="exercise-box">
+        <span class="ex-label">Exercise 1 — Phone Number Extractor</span>
+        Write a regex to extract all US phone numbers from a string. Handle formats: <span class="ic">(555) 123-4567</span>, <span class="ic">555-123-4567</span>, and <span class="ic">5551234567</span>.
+      </div>
+      <div class="exercise-box">
+        <span class="ex-label">Exercise 2 — IP Address Validator</span>
+        Write <span class="ic">is_valid_ip(ip)</span> using regex. Each octet must be 0–255. Test with <span class="ic">"192.168.1.1"</span> (valid) and <span class="ic">"999.0.0.1"</span> (invalid).
+      </div>
+      <div class="exercise-box">
+        <span class="ex-label">Exercise 3 — Log Threat Scanner</span>
+        Parse a multi-line server log and extract all lines containing status codes 4xx or 5xx. Output the IP address and URL from each bad request.
+      </div>
+    </div>
+  </section>
+
+  <!-- ══════════════════════════════════════════
+       SLIDE 35 – SECTION BREAK: File I/O
+  ══════════════════════════════════════════ -->
+  <section class="slide section-break">
+    <div class="section-number">04</div>
+    <div class="slide-label">Chapter 4</div>
+    <span class="section-icon">📂</span>
+    <h2>Working with <span>Files</span></h2>
+    <div class="slide-content big-center">
+      <p>Read datasets. Write results. Analyze logs. Persist data.</p>
+    </div>
+  </section>
+
+  <!-- ══════════════════════════════════════════
+       SLIDE 36 – Why File I/O Matters
+  ══════════════════════════════════════════ -->
+  <section class="slide">
+    <div class="slide-label">Chapter 4 · File I/O</div>
+    <h2>Why File I/O <span>Matters</span></h2>
+    <div class="slide-content">
+      <div class="grid">
+        <div class="accent-box">
+          <strong style="color:var(--accent); font-family:'Space Mono',monospace; font-size:0.85rem; letter-spacing:3px; display:block; margin-bottom:10px;">MACHINE LEARNING</strong>
+          Load training datasets from CSV files. Save trained model weights. Write predictions to output files. Log training metrics.
+        </div>
+        <div class="info-box">
+          <strong style="color:var(--blue); font-family:'Space Mono',monospace; font-size:0.85rem; letter-spacing:3px; display:block; margin-bottom:10px;">CYBERSECURITY</strong>
+          Read server access logs. Write incident reports. Parse config files. Store threat intelligence data.
+        </div>
+      </div>
+      <ul style="margin-top:16px;">
+        <li><strong>Persistence</strong> — Data outlives the program; survives restarts</li>
+        <li><strong>Interoperability</strong> — Share data between different programs and teams</li>
+        <li><strong>Automation</strong> — Batch process thousands of files without human input</li>
+      </ul>
+    </div>
+  </section>
+
+  <!-- ══════════════════════════════════════════
+       SLIDE 37 – Opening Files
+  ══════════════════════════════════════════ -->
+  <section class="slide">
+    <div class="slide-label">Chapter 4 · File I/O</div>
+    <h2>Opening <span>Files</span></h2>
+    <div class="slide-content">
+      <div class="table-wrap">
+        <table>
+          <thead><tr><th>Mode</th><th>Meaning</th><th>Creates File?</th><th>Overwrites?</th></tr></thead>
+          <tbody>
+            <tr><td><code>"r"</code></td><td>Read (default)</td><td>No</td><td>No</td></tr>
+            <tr><td><code>"w"</code></td><td>Write</td><td>Yes</td><td>Yes — careful!</td></tr>
+            <tr><td><code>"a"</code></td><td>Append</td><td>Yes</td><td>No — adds to end</td></tr>
+            <tr><td><code>"x"</code></td><td>Exclusive create</td><td>Yes</td><td>Error if exists</td></tr>
+            <tr><td><code>"rb"</code></td><td>Read binary</td><td>No</td><td>No</td></tr>
+            <tr><td><code>"r+"</code></td><td>Read + write</td><td>No</td><td>Partial</td></tr>
+          </tbody>
+        </table>
+      </div>
+      <div class="warn-box">
+        <strong>Always use <span class="ic">with open(...)</span></strong> — it automatically closes the file even if an error occurs. Never rely on manual <span class="ic">.close()</span> calls.
+      </div>
+    </div>
+  </section>
+
+  <!-- ══════════════════════════════════════════
+       SLIDE 38 – Reading Files
+  ══════════════════════════════════════════ -->
+  <section class="slide">
+    <div class="slide-label">Chapter 4 · File I/O</div>
+    <h2>Reading <span>Files</span></h2>
+    <div class="slide-content">
+      <div class="code-block">
+        <div class="mac-titlebar">
+          <div class="mac-dot red"></div><div class="mac-dot yellow"></div><div class="mac-dot green"></div>
+          <span class="mac-filename">read_file.py</span>
+        </div>
+        <pre><span class="cmt"># Read entire file at once</span>
+<span class="kw">with</span> <span class="fn">open</span>(<span class="str">"data.txt"</span>, <span class="str">"r"</span>, <span class="var">encoding</span><span class="op">=</span><span class="str">"utf-8"</span>) <span class="kw">as</span> f:
+    content <span class="op">=</span> f.<span class="fn">read</span>()       <span class="cmt"># entire file as a string</span>
+
+<span class="cmt"># Read line by line (memory-efficient for large files)</span>
+<span class="kw">with</span> <span class="fn">open</span>(<span class="str">"data.txt"</span>, <span class="str">"r"</span>) <span class="kw">as</span> f:
+    <span class="kw">for</span> line <span class="kw">in</span> f:
+        <span class="fn">print</span>(line.<span class="fn">strip</span>())   <span class="cmt"># process one line at a time</span>
+
+<span class="cmt"># Read all lines into a list</span>
+<span class="kw">with</span> <span class="fn">open</span>(<span class="str">"data.txt"</span>) <span class="kw">as</span> f:
+    lines <span class="op">=</span> f.<span class="fn">readlines</span>()     <span class="cmt"># ['line1\n', 'line2\n', ...]</span>
+
+<span class="cmt"># Read first N bytes</span>
+<span class="kw">with</span> <span class="fn">open</span>(<span class="str">"binary.dat"</span>, <span class="str">"rb"</span>) <span class="kw">as</span> f:
+    header <span class="op">=</span> f.<span class="fn">read</span>(<span class="num">16</span>)</pre>
+      </div>
+    </div>
+  </section>
+
+  <!-- ══════════════════════════════════════════
+       SLIDE 39 – Writing Files
+  ══════════════════════════════════════════ -->
+  <section class="slide">
+    <div class="slide-label">Chapter 4 · File I/O</div>
+    <h2>Writing <span>Files</span></h2>
+    <div class="slide-content">
+      <div class="code-block">
+        <div class="mac-titlebar">
+          <div class="mac-dot red"></div><div class="mac-dot yellow"></div><div class="mac-dot green"></div>
+          <span class="mac-filename">write_file.py</span>
+        </div>
+        <pre><span class="cmt"># Write (overwrites existing content)</span>
+<span class="kw">with</span> <span class="fn">open</span>(<span class="str">"results.txt"</span>, <span class="str">"w"</span>) <span class="kw">as</span> f:
+    f.<span class="fn">write</span>(<span class="str">"Model accuracy: 94.5%\n"</span>)
+    f.<span class="fn">write</span>(<span class="str">"Training time:  3.2s\n"</span>)
+
+<span class="cmt"># Append to existing file (security audit log)</span>
+<span class="kw">import</span> datetime
+<span class="kw">with</span> <span class="fn">open</span>(<span class="str">"audit.log"</span>, <span class="str">"a"</span>) <span class="kw">as</span> f:
+    <span class="var">timestamp</span> <span class="op">=</span> datetime.datetime.<span class="fn">now</span>().<span class="fn">isoformat</span>()
+    f.<span class="fn">write</span>(<span class="str">f"<span class="acc">{timestamp}</span> - User 'admin' accessed /secrets\n"</span>)
+
+<span class="cmt"># Write multiple lines efficiently</span>
+<span class="var">predictions</span> <span class="op">=</span> [<span class="str">"spam"</span>, <span class="str">"ham"</span>, <span class="str">"spam"</span>, <span class="str">"ham"</span>]
+<span class="kw">with</span> <span class="fn">open</span>(<span class="str">"predictions.txt"</span>, <span class="str">"w"</span>) <span class="kw">as</span> f:
+    f.<span class="fn">writelines</span>(p <span class="op">+</span> <span class="str">"\n"</span> <span class="kw">for</span> p <span class="kw">in</span> predictions)</pre>
+      </div>
+    </div>
+  </section>
+
+  <!-- ══════════════════════════════════════════
+       SLIDE 40 – Working with CSV
+  ══════════════════════════════════════════ -->
+  <section class="slide">
+    <div class="slide-label">Chapter 4 · File I/O</div>
+    <h2>Working with <span>CSV Files</span></h2>
+    <div class="slide-content">
+      <div class="code-block">
+        <div class="mac-titlebar">
+          <div class="mac-dot red"></div><div class="mac-dot yellow"></div><div class="mac-dot green"></div>
+          <span class="mac-filename">csv_handler.py</span>
+        </div>
+        <pre><span class="kw">import</span> csv
+
+<span class="cmt"># Reading a CSV dataset (ML use case)</span>
+<span class="kw">with</span> <span class="fn">open</span>(<span class="str">"training_data.csv"</span>, newline<span class="op">=</span><span class="str">""</span>) <span class="kw">as</span> f:
+    reader <span class="op">=</span> csv.<span class="fn">DictReader</span>(f)           <span class="cmt"># rows as dicts</span>
+    <span class="kw">for</span> row <span class="kw">in</span> reader:
+        feature <span class="op">=</span> <span class="fn">float</span>(row[<span class="str">"temperature"</span>])
+        label   <span class="op">=</span> row[<span class="str">"anomaly"</span>]
+
+<span class="cmt"># Writing predictions to CSV</span>
+<span class="var">results</span> <span class="op">=</span> [
+    {<span class="str">"ip"</span>: <span class="str">"10.0.0.1"</span>, <span class="str">"threat"</span>: <span class="str">"none"</span>,  <span class="str">"score"</span>: <span class="num">0.02</span>},
+    {<span class="str">"ip"</span>: <span class="str">"10.0.0.9"</span>, <span class="str">"threat"</span>: <span class="str">"malware"</span>, <span class="str">"score"</span>: <span class="num">0.97</span>},
+]
+<span class="kw">with</span> <span class="fn">open</span>(<span class="str">"threats.csv"</span>, <span class="str">"w"</span>, newline<span class="op">=</span><span class="str">""</span>) <span class="kw">as</span> f:
+    writer <span class="op">=</span> csv.<span class="fn">DictWriter</span>(f, fieldnames<span class="op">=</span>[<span class="str">"ip"</span>, <span class="str">"threat"</span>, <span class="str">"score"</span>])
+    writer.<span class="fn">writeheader</span>()
+    writer.<span class="fn">writerows</span>(results)</pre>
+      </div>
+    </div>
+  </section>
+
+  <!-- ══════════════════════════════════════════
+       SLIDE 41 – Working with JSON
+  ══════════════════════════════════════════ -->
+  <section class="slide">
+    <div class="slide-label">Chapter 4 · File I/O</div>
+    <h2>Working with <span>JSON Files</span></h2>
+    <div class="slide-content">
+      <div class="code-block">
+        <div class="mac-titlebar">
+          <div class="mac-dot red"></div><div class="mac-dot yellow"></div><div class="mac-dot green"></div>
+          <span class="mac-filename">json_handler.py</span>
+        </div>
+        <pre><span class="kw">import</span> json
+
+<span class="cmt"># Load model configuration from JSON</span>
+<span class="kw">with</span> <span class="fn">open</span>(<span class="str">"config.json"</span>) <span class="kw">as</span> f:
+    config <span class="op">=</span> json.<span class="fn">load</span>(f)    <span class="cmt"># JSON → Python dict</span>
+
+<span class="fn">print</span>(config[<span class="str">"learning_rate"</span>])   <span class="cmt"># 0.001</span>
+<span class="fn">print</span>(config[<span class="str">"hidden_layers"</span>])   <span class="cmt"># [128, 64, 32]</span>
+
+<span class="cmt"># Save threat intelligence report as JSON</span>
+<span class="var">report</span> <span class="op">=</span> {
+    <span class="str">"scan_date"</span>: <span class="str">"2024-03-15"</span>,
+    <span class="str">"threats_found"</span>: <span class="num">3</span>,
+    <span class="str">"malicious_ips"</span>: [<span class="str">"192.168.1.99"</span>, <span class="str">"10.0.0.254"</span>],
+}
+<span class="kw">with</span> <span class="fn">open</span>(<span class="str">"report.json"</span>, <span class="str">"w"</span>) <span class="kw">as</span> f:
+    json.<span class="fn">dump</span>(report, f, <span class="var">indent</span><span class="op">=</span><span class="num">4</span>)  <span class="cmt"># Python dict → JSON</span></pre>
+      </div>
+    </div>
+  </section>
+
+  <!-- ══════════════════════════════════════════
+       SLIDE 42 – ML: Loading a Dataset
+  ══════════════════════════════════════════ -->
+  <section class="slide">
+    <div class="slide-label">Chapter 4 · ML Application</div>
+    <h2>ML Example: <span>Loading a Dataset</span></h2>
+    <div class="slide-content">
+      <div class="code-block">
+        <div class="mac-titlebar">
+          <div class="mac-dot red"></div><div class="mac-dot yellow"></div><div class="mac-dot green"></div>
+          <span class="mac-filename">load_dataset.py</span>
+        </div>
+        <pre><span class="kw">import</span> csv
+
+<span class="kw">def</span> <span class="fn">load_dataset</span>(<span class="var">filepath</span>):
+    <span class="str">"""Load CSV dataset → returns (features, labels)."""</span>
+    features, labels <span class="op">=</span> [], []
+
+    <span class="kw">try</span>:
+        <span class="kw">with</span> <span class="fn">open</span>(filepath, newline<span class="op">=</span><span class="str">""</span>) <span class="kw">as</span> f:
+            reader <span class="op">=</span> csv.<span class="fn">DictReader</span>(f)
+            <span class="kw">for</span> row <span class="kw">in</span> reader:
+                features.<span class="fn">append</span>([
+                    <span class="fn">float</span>(row[<span class="str">"cpu_usage"</span>]),
+                    <span class="fn">float</span>(row[<span class="str">"memory_mb"</span>]),
+                    <span class="fn">float</span>(row[<span class="str">"network_kbps"</span>]),
+                ])
+                labels.<span class="fn">append</span>(row[<span class="str">"anomaly"</span>])
+
+    <span class="kw">except</span> <span class="err">FileNotFoundError</span>:
+        <span class="fn">print</span>(<span class="str">f"Dataset not found: <span class="acc">{filepath}</span>"</span>)
+        <span class="kw">return</span> [], []
+
+    <span class="fn">print</span>(<span class="str">f"Loaded <span class="acc">{len(features)}</span> samples"</span>)
+    <span class="kw">return</span> features, labels</pre>
+      </div>
+    </div>
+  </section>
+
+  <!-- ══════════════════════════════════════════
+       SLIDE 43 – Security: Log Analyzer
+  ══════════════════════════════════════════ -->
+  <section class="slide">
+    <div class="slide-label">Chapter 4 · Security Application</div>
+    <h2>Security: <span>Log File Analyzer</span></h2>
+    <div class="slide-content">
+      <div class="code-block">
+        <div class="mac-titlebar">
+          <div class="mac-dot red"></div><div class="mac-dot yellow"></div><div class="mac-dot green"></div>
+          <span class="mac-filename">log_analyzer.py</span>
+        </div>
+        <pre><span class="kw">import</span> re
+
+<span class="kw">def</span> <span class="fn">analyze_auth_log</span>(<span class="var">logfile</span>):
+    <span class="str">"""Find IPs with repeated failed logins."""</span>
+    failures <span class="op">=</span> {}
+    pattern  <span class="op">=</span> re.<span class="fn">compile</span>(<span class="str">r"Failed password.*from ([\d.]+)"</span>)
+
+    <span class="kw">with</span> <span class="fn">open</span>(logfile) <span class="kw">as</span> f:
+        <span class="kw">for</span> line <span class="kw">in</span> f:
+            m <span class="op">=</span> pattern.<span class="fn">search</span>(line)
+            <span class="kw">if</span> m:
+                ip <span class="op">=</span> m.<span class="fn">group</span>(<span class="num">1</span>)
+                failures[ip] <span class="op">=</span> failures.<span class="fn">get</span>(ip, <span class="num">0</span>) <span class="op">+</span> <span class="num">1</span>
+
+    <span class="cmt"># Report IPs with 5+ failures</span>
+    suspects <span class="op">=</span> {ip: n <span class="kw">for</span> ip, n <span class="kw">in</span> failures.<span class="fn">items</span>() <span class="kw">if</span> n <span class="op">&gt;=</span> <span class="num">5</span>}
+    <span class="kw">with</span> <span class="fn">open</span>(<span class="str">"suspicious_ips.txt"</span>, <span class="str">"w"</span>) <span class="kw">as</span> out:
+        <span class="kw">for</span> ip, count <span class="kw">in</span> suspects.<span class="fn">items</span>():
+            out.<span class="fn">write</span>(<span class="str">f"<span class="acc">{ip}</span>: <span class="acc">{count}</span> failed attempts\n"</span>)
+
+    <span class="kw">return</span> suspects</pre>
+      </div>
+    </div>
+  </section>
+
+  <!-- ══════════════════════════════════════════
+       SLIDE 44 – os and pathlib
+  ══════════════════════════════════════════ -->
+  <section class="slide">
+    <div class="slide-label">Chapter 4 · File I/O</div>
+    <h2>File Paths: <span>os &amp; pathlib</span></h2>
+    <div class="slide-content">
+      <div class="code-block">
+        <div class="mac-titlebar">
+          <div class="mac-dot red"></div><div class="mac-dot yellow"></div><div class="mac-dot green"></div>
+          <span class="mac-filename">paths.py</span>
+        </div>
+        <pre><span class="kw">import</span> os
+<span class="kw">from</span> pathlib <span class="kw">import</span> Path
+
+<span class="cmt"># os module (classic approach)</span>
+<span class="fn">os.path</span>.<span class="fn">exists</span>(<span class="str">"data.csv"</span>)           <span class="cmt"># True / False</span>
+<span class="fn">os.path</span>.<span class="fn">join</span>(<span class="str">"datasets"</span>, <span class="str">"train.csv"</span>) <span class="cmt"># cross-platform paths</span>
+<span class="fn">os</span>.<span class="fn">makedirs</span>(<span class="str">"output/models"</span>, <span class="var">exist_ok</span><span class="op">=</span><span class="kw">True</span>)
+
+<span class="cmt"># pathlib (modern, recommended)</span>
+<span class="var">p</span> <span class="op">=</span> <span class="fn">Path</span>(<span class="str">"datasets"</span>) <span class="op">/</span> <span class="str">"train.csv"</span>  <span class="cmt"># / operator builds paths!</span>
+p.<span class="fn">exists</span>()             <span class="cmt"># check existence</span>
+p.<span class="fn">suffix</span>               <span class="cmt"># ".csv"</span>
+p.<span class="fn">stem</span>                 <span class="cmt"># "train"</span>
+p.<span class="fn">parent</span>               <span class="cmt"># Path("datasets")</span>
+
+<span class="cmt"># Find all log files in a directory</span>
+<span class="var">logs</span> <span class="op">=</span> <span class="fn">list</span>(<span class="fn">Path</span>(<span class="str">"/var/log"</span>).<span class="fn">glob</span>(<span class="str">"**/*.log"</span>))</pre>
+      </div>
+    </div>
+  </section>
+
+  <!-- ══════════════════════════════════════════
+       SLIDE 45 – Putting It Together
+  ══════════════════════════════════════════ -->
+  <section class="slide">
+    <div class="slide-label">Chapter 4 · Capstone</div>
+    <h2>Capstone: <span>ML Security Pipeline</span></h2>
+    <div class="slide-content">
+      <div class="code-block">
+        <div class="mac-titlebar">
+          <div class="mac-dot red"></div><div class="mac-dot yellow"></div><div class="mac-dot green"></div>
+          <span class="mac-filename">ml_security_pipeline.py</span>
+        </div>
+        <pre><span class="kw">import</span> re, csv, json
+<span class="kw">from</span> pathlib <span class="kw">import</span> Path
+
+<span class="kw">def</span> <span class="fn">run_pipeline</span>(<span class="var">log_path</span>, <span class="var">output_dir</span>):
+    <span class="fn">Path</span>(output_dir).<span class="fn">mkdir</span>(<span class="var">exist_ok</span><span class="op">=</span><span class="kw">True</span>)
+    threats <span class="op">=</span> []
+
+    <span class="kw">try</span>:
+        <span class="kw">with</span> <span class="fn">open</span>(log_path) <span class="kw">as</span> f:
+            <span class="kw">for</span> line <span class="kw">in</span> f:
+                ip <span class="op">=</span> re.<span class="fn">search</span>(<span class="str">r"(\d{1,3}\.){3}\d{1,3}"</span>, line)
+                <span class="kw">if</span> ip <span class="kw">and</span> (<span class="str">"ERROR"</span> <span class="kw">in</span> line <span class="kw">or</span> <span class="str">"FAIL"</span> <span class="kw">in</span> line):
+                    threats.<span class="fn">append</span>({<span class="str">"ip"</span>: ip.<span class="fn">group</span>(), <span class="str">"line"</span>: line.<span class="fn">strip</span>()})
+
+    <span class="kw">except</span> <span class="err">FileNotFoundError</span> <span class="kw">as</span> e:
+        <span class="fn">print</span>(<span class="str">f"Error: <span class="acc">{e}</span>"</span>); <span class="kw">return</span>
+
+    <span class="kw">with</span> <span class="fn">open</span>(<span class="str">f"<span class="acc">{output_dir}</span>/threats.json"</span>, <span class="str">"w"</span>) <span class="kw">as</span> out:
+        json.<span class="fn">dump</span>(threats, out, <span class="var">indent</span><span class="op">=</span><span class="num">2</span>)
+    <span class="fn">print</span>(<span class="str">f"Found <span class="acc">{len(threats)}</span> threats → saved to <span class="acc">{output_dir}</span>"</span>)</pre>
+      </div>
+    </div>
+  </section>
+
+  <!-- ══════════════════════════════════════════
+       SLIDE 46 – File I/O Exercises
+  ══════════════════════════════════════════ -->
+  <section class="slide">
+    <div class="slide-label">Chapter 4 · Exercises</div>
+    <h2>File I/O <span>Practice</span></h2>
+    <div class="slide-content">
+      <div class="exercise-box">
+        <span class="ex-label">Exercise 1 — Word Frequency</span>
+        Read a text file and count word frequencies. Write the top 10 most frequent words and their counts to a new file called <span class="ic">word_freq.csv</span>.
+      </div>
+      <div class="exercise-box">
+        <span class="ex-label">Exercise 2 — Dataset Splitter</span>
+        Read a CSV file and split it 80/20 into <span class="ic">train.csv</span> and <span class="ic">test.csv</span>. Preserve the header row in both output files.
+      </div>
+      <div class="exercise-box">
+        <span class="ex-label">Exercise 3 — Incident Report Generator</span>
+        Read an access log, identify lines with status codes 400–599, and write a JSON report with: timestamp, IP, URL, status code, and a severity label.
+      </div>
+    </div>
+  </section>
+
+  <!-- ══════════════════════════════════════════
+       SLIDE 47 – Key Concepts Summary
+  ══════════════════════════════════════════ -->
+  <section class="slide">
+    <div class="slide-label">Summary</div>
+    <h2>Key <span>Takeaways</span></h2>
+    <div class="slide-content">
+      <ul>
+        <li><strong>Functions</strong> — Named, reusable code blocks; use <span class="ic">def</span>, parameters, return values, and docstrings</li>
+        <li><strong>*args / **kwargs</strong> — Accept variable numbers of positional and keyword arguments</li>
+        <li><strong>try / except / else / finally</strong> — Catch exceptions; always clean up with <span class="ic">finally</span></li>
+        <li><strong>Raise exceptions</strong> — Enforce rules in your code; create custom exception classes</li>
+        <li><strong>Regex</strong> — Pattern matching with the <span class="ic">re</span> module; use groups to extract data</li>
+        <li><strong>File I/O</strong> — Always use <span class="ic">with open()</span>; read line-by-line for large files</li>
+      </ul>
+    </div>
+  </section>
+
+  <!-- ══════════════════════════════════════════
+       SLIDE 48 – Real-World Connections
+  ══════════════════════════════════════════ -->
+  <section class="slide">
+    <div class="slide-label">Real-World Context</div>
+    <h2>Where You'll Use <span>This</span></h2>
+    <div class="slide-content">
+      <div class="grid">
+        <div>
+          <div class="accent-box">
+            <strong style="color:var(--accent); font-family:'Space Mono',monospace; font-size:0.85rem; letter-spacing:3px; display:block; margin-bottom:12px;">🤖 MACHINE LEARNING</strong>
+            Functions → modular pipelines<br>
+            Error handling → robust APIs<br>
+            File I/O → dataset loading<br>
+            Regex → text preprocessing &amp; NLP
+          </div>
+        </div>
+        <div>
+          <div class="info-box">
+            <strong style="color:var(--blue); font-family:'Space Mono',monospace; font-size:0.85rem; letter-spacing:3px; display:block; margin-bottom:12px;">🔐 CYBERSECURITY</strong>
+            Functions → reusable security tools<br>
+            Error handling → safe login flows<br>
+            File I/O → log ingestion &amp; reporting<br>
+            Regex → pattern detection &amp; scanning
+          </div>
+        </div>
+      </div>
+      <div class="purple-box" style="margin-top:16px;">
+        These four concepts are the <strong>backbone of professional Python code</strong> — in both fields, they appear in nearly every real project.
+      </div>
+    </div>
+  </section>
+
+  <!-- ══════════════════════════════════════════
+       SLIDE 49 – What Comes Next
+  ══════════════════════════════════════════ -->
+  <section class="slide">
+    <div class="slide-label">Part 3 Preview</div>
+    <h2>What's Next in <span>Part 3?</span></h2>
+    <div class="slide-content">
+      <ul>
+        <li><strong>Object-Oriented Programming</strong> — Classes, inheritance, encapsulation; build your own data types</li>
+        <li><strong>Modules &amp; Packages</strong> — Organize code across files; use pip; explore the standard library</li>
+        <li><strong>Data Structures</strong> — Lists, dicts, sets, tuples in depth — slicing, sorting, comprehensions</li>
+        <li><strong>NumPy &amp; pandas</strong> — Numerical arrays and data tables; the foundation of all ML in Python</li>
+        <li><strong>Decorators &amp; Context Managers</strong> — Advanced function patterns used everywhere in production</li>
+      </ul>
+      <div class="accent-box" style="margin-top:20px;">
+        The tools you've built today — functions, error handling, regex, file I/O — will be used constantly in Part 3.
+      </div>
+    </div>
+  </section>
+
+  <!-- ══════════════════════════════════════════
+       SLIDE 50 – Finish
+  ══════════════════════════════════════════ -->
+  <section class="slide section-break">
+    <div class="slide-label">Finishing Line</div>
+    <h2>You're Ready to <span>Build Real Things</span></h2>
+    <div class="slide-content big-center">
+      <p>You now have four powerful Python tools in your hands.</p>
+      <p style="margin-top:16px; font-size:1.1rem; color:var(--muted);">Open your editor. Pick a topic. Start writing.</p>
+      <div style="margin-top:20px; display:flex; justify-content:center; gap:12px; flex-wrap:wrap;">
+        <span class="chip">def function():</span>
+        <span class="chip blue">try / except</span>
+        <span class="chip purple">re.search()</span>
+        <span class="chip orange">open("file")</span>
+      </div>
+      <div style="margin-top:36px; display:flex; justify-content:center; gap:16px;">
+        <button class="nav-btn" style="width:auto; border-radius:8px; padding:0 32px; font-size:0.9rem; font-family:'Space Mono',monospace; letter-spacing:2px;" onclick="goTo(0)">↺ RESTART</button>
+        <button class="nav-btn" style="width:auto; border-radius:8px; padding:0 32px; font-size:0.9rem; font-family:'Space Mono',monospace; letter-spacing:2px; border-color:var(--accent); color:var(--accent);" onclick="goTo(2)">→ CHAPTER 1</button>
+      </div>
+    </div>
+  </section>
+
+</div><!-- end carousel -->
+
+<div class="nav-controls">
+  <button class="nav-btn" onclick="move(-1)" aria-label="Previous slide">←</button>
+  <button class="nav-btn" onclick="move(1)"  aria-label="Next slide">→</button>
+</div>
+
+<script>
+  let currentSlide = 0;
+  const carousel  = document.getElementById('carousel');
+  const progText  = document.getElementById('prog-text');
+  const progBar   = document.getElementById('prog-bar');
+  const slides    = document.querySelectorAll('.slide');
+  const total     = slides.length;
+
+  function goTo(n) {
+    currentSlide = Math.max(0, Math.min(n, total - 1));
+    carousel.style.transform = `translateX(-${currentSlide * 100}vw)`;
+    progText.textContent = `Slide ${currentSlide + 1} / ${total}`;
+    progBar.style.width  = `${((currentSlide + 1) / total) * 100}%`;
+  }
+
+  function move(dir) { goTo(currentSlide + dir); }
+
+  // Keyboard navigation
+  window.addEventListener('keydown', (e) => {
+    if (e.key === 'ArrowRight' || e.key === ' ') { e.preventDefault(); move(1); }
+    if (e.key === 'ArrowLeft')                   { e.preventDefault(); move(-1); }
+    if (e.key === 'Home') goTo(0);
+    if (e.key === 'End')  goTo(total - 1);
+  });
+
+  // Touch / swipe support
+  let touchStartX = 0;
+  document.addEventListener('touchstart', e => { touchStartX = e.touches[0].clientX; }, { passive: true });
+  document.addEventListener('touchend',   e => {
+    const delta = touchStartX - e.changedTouches[0].clientX;
+    if (Math.abs(delta) > 50) move(delta > 0 ? 1 : -1);
+  }, { passive: true });
+
+  // Initialise
+  goTo(0);
+</script>
+</body>
+</html>
