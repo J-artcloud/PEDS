@@ -3,10 +3,12 @@
 import base64
 import os
 import streamlit as st
+import vectorize
 
 from dataset import get_all_emails
-from rule_engine import analyse
-from ml_model    import train, predict
+from Run_engine import analyse
+from ML_model import train, predict
+
 
 
 st.set_page_config(
@@ -133,9 +135,10 @@ _set_background("background.jpeg")
 def load_model():
     """Trains the ML model and caches the result so repeated interactions
     don't re-train from scratch."""
-    return train()   # returns (prototypes, vocab)
+    return train, predict  # returns (prototypes, vocab)
 
-prototypes, vocab = load_model()
+prototypes ,vocab = load_model() 
+
 
 
 st.markdown(
@@ -192,8 +195,8 @@ if st.button("🔍  Check This Email"):
     else:
        
         rule_result = analyse(subject, body)
-        ml_label, ml_score  = predict(subject, body, prototypes, vocab)
-
+        ml_label  = predict(subject, body, prototypes, vocab)
+        #calculating score: 
         rule_score   = rule_result["score"]
         rule_label   = rule_result["label"]
         matched_rules = rule_result["matched_rules"]
