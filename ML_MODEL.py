@@ -19,49 +19,51 @@ def train() -> tuple[dict, list]:
     Returns
     -------
         tuple[dict, list]
-        DESCRIPTION.
+        returns a tuple containing the prototype dictionary and the vocabulary
 
     """
     
     emails = get_all_emails()
     vocab = build_vocabulary()
     
-    # grouping email by label
+    # grouping email by label and covert each email to vector
     groups = {lbl: [] for lbl in LABELS}
     for email in emails:
         label = email["label"]
         if label in groups:
             text = email["subject"].lower() + " " + email["body"].lower()
             groups[label].append(text_to_vector(text, vocab))
-    print(groups)
     
-        
-        
+    # averaging all vectors into one prototype vector
+    prototype_dict = {}
+    for label, vectors in groups.items():
+        if not vectors:
+            continue
+        dimension = len(vocab)
+        total = [0.0] * dimension
+        for vector in vectors:
+            for idx, val in enumerate(vector):
+                total[idx] += val
+        prototype_dict[label] = [val / len(vectors) for val in total]
     
+    return prototype_dict, vocab
+            
+            
 
 
 
+def predict(subject, body, prototypes, vocab):
+    """
+    function predicts the label for any given email
 
-
-def predict(subject, body, prototype_dict, vocab):
-    # converting new email to vectors 
-    text = subject.lower() + " " + body.lower()
-    vector = text_to_vector(text, vocab)
+    Args: 
+        subject: text subject from email
+        body: text body from email
+        prototypes: prototype dictionary
+        vocab: vocabulary
     
-    # computing dot prod for each lable
-    prototype_dict = train()
-    scores = []
-    for label in prototype_dict:
-        score = dot_product(vector, prototype_dict[label])
-        scores.append(score)
-    max_score = max(scores)
+    returns:
+        function returns the label whose prototype has the highest dot product score
+        along with the three scores
     
-    # selecting which label has the highest score
-    if max_score == scores[0]:
-        return "Legitimate", scores
-    elif max_score == scores[1]:
-        return "Suspicious", scores
-    else:   
-        return "Phising", scores
-
-train()
+    """
