@@ -1,5 +1,7 @@
 # gitignore
 
+# virtual environments
+*.venv
 # IDE config files
 .vscode
 .spyproject
