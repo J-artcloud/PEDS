@@ -1,19 +1,32 @@
 
 from dataset import get_all_emails
 
-emails = get_all_emails()
 
-
-# Build a vocabulary from the email dataset
 def build_vocabulary():
+    """
+    Builds a vocabulary list from the emails in dataset
+    Vars:
+        emails: list of all emails in dataset
+        vocab: set of unique vocabulary in words
+    
+        returns: 
+            sorted list of vocabulary
+    """
+
+    emails = get_all_emails()
     vocab = set()
     for email in emails:
         words = email["subject"].lower().split() + email["body"].lower().split()
         vocab.update(words)
-    return list(vocab)
+    return sorted(vocab)    
 
 # Convert text to a vector based on the vocabulary
-def text_to_vector(text, vocab):
+def text_to_vector(text: str, vocab: list):
+    """
+    returns a list of occurances for each word in vocabulary
+    
+    
+    """
     vector = []
     words = text.lower().split()
     for word in vocab:
@@ -24,5 +37,3 @@ def text_to_vector(text, vocab):
         else:
             vector.append(0)
     return vector
-
-vocabulary = build_vocabulary()
