@@ -52,7 +52,7 @@ def train() -> tuple[dict, list]:
 
 
 
-def predict(subject, body, prototypes, vocab):
+def predict(subject: str, body: str, prototypes, vocab: list) -> tuple[str, list]:
     """
     function predicts the label for any given email
 
@@ -64,6 +64,18 @@ def predict(subject, body, prototypes, vocab):
     
     returns:
         function returns the label whose prototype has the highest dot product score
-        along with the three scores
-    
+        along with the scores
     """
+    prototypes, vocab  = train()
+    text = subject.lower()+ " " + body.lower()
+    vector = text_to_vector(text, vocab)
+
+    scores = []
+    for label in LABELS:
+        if label in prototypes:
+            scores.append(dot_product(vector, prototypes[label]))
+        else:
+            scores.append(0.0)
+    best_score_index = scores.index(max(scores))
+
+    return LABELS[best_score_index], scores
