@@ -37,13 +37,5 @@ def text_to_vector(text: str, vocab: list):
         in words
     
     """
-    vector = []
     words = text.lower().split()
-    for word in vocab:
-        count = 0
-        if word in words:
-            count = words.count(word)
-            vector.append(count)
-        else:
-            vector.append(0)
-    return vector
+    return [words.count(word) for word in vocab]
