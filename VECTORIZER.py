@@ -23,8 +23,18 @@ def build_vocabulary():
 # Convert text to a vector based on the vocabulary
 def text_to_vector(text: str, vocab: list):
     """
-    returns a list of occurances for each word in vocabulary
+    returns a list of occurances for each word in vocabulary in text
+
+    Args: 
+        text:  all text from user that is subject + body
+        vocab: list of vocabulary words
+
+    Vars: 
+        words: list of words in text
     
+    Return:
+        returns a list of nummbers which contains the number of occurences of each word in vocab
+        in words
     
     """
     vector = []
